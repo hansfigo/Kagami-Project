@@ -1,4 +1,4 @@
-import { startServer } from "./src/app";
+import { startServer } from "./app";
 
 (async () => {
   await startServer();

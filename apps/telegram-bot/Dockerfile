@@ -1,36 +1,32 @@
-# Use Node.js LTS version
-FROM node:18-alpine
+# --- Build Stage ---
+FROM node:18-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Install pnpm
 RUN npm install -g pnpm
 
-# Copy root package.json and pnpm workspace files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-
-# Copy turbo.json if exists
 COPY turbo.json* ./
 
-# Copy all apps and packages for workspace dependencies
-COPY apps ./apps
-COPY packages ./packages
 
-# Install dependencies using pnpm
+COPY apps/telegram-bot ./apps/telegram-bot
+
 RUN pnpm install --frozen-lockfile
+RUN pnpm --filter=telegram-bot build
 
-# Build the worker app
-RUN pnpm --filter=worker build
+# --- Production Stage ---
+FROM node:18-alpine
 
-# Expose port (if needed for health checks)
-EXPOSE 3000
+WORKDIR /app/apps/telegram-bot
 
-# Set environment to production
+COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
+COPY --from=builder /app/apps/telegram-bot/package.json ./package.json 
+
+COPY --from=builder /app/apps/telegram-bot/dist ./dist
+
+RUN npm install -g pnpm 
+RUN pnpm install --prod 
+
 ENV NODE_ENV=production
 
-# Change to worker directory
-WORKDIR /app/apps/worker
-
-# Start the worker
 CMD ["node", "dist/index.js"]

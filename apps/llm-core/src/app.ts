@@ -10,8 +10,22 @@ const chatService = new ChatService()
 
 export class LLMCore {
     constructor(private server: Elysia) {
+        const hostname = process.env.LISTEN_HOSTNAME
+
         this.init();
-        this.listen(3000);
+        if (hostname) {
+            this.server.listen({
+                hostname,
+                port: 3000
+            });
+            console.log(`LLM Core Server is running on http://${hostname}:3000`);
+        }
+        else {
+            this.server.listen(3000);
+            console.log("LLM Core Server is running on http://localhost:3000");
+        }
+
+
     }
 
     public async init(): Promise<void> {
