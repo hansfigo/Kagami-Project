@@ -24,8 +24,6 @@ export class LLMCore {
             this.server.listen(3000);
             console.log("LLM Core Server is running on http://localhost:3000");
         }
-
-
     }
 
     public async init(): Promise<void> {

@@ -128,7 +128,7 @@ export class ChatService implements IChatService {
             .map((msg) => `[${msg.role}] (${new Date(msg.createdAt).toLocaleTimeString()}): ${msg.content}`)
             .reverse() || [];
 
-        const systemPrompt = createSystemPromot.default(
+        const systemPrompt = createSystemPromot.old(
             userProfileContext,
             chatHistoryContext,
             getCurrentDateTimeInfo(),
@@ -140,7 +140,10 @@ export class ChatService implements IChatService {
         let aiResponse: unknown;
 
         try {
-            const result = await llm.invoke(fullPrompt);
+            const result = await llm.invoke([
+                ["system", systemPrompt],
+                ["human", message]
+            ]);
             aiResponse = result.content
         } catch (error) {
             console.error('Error saat berinteraksi dengan LLM:', error);
