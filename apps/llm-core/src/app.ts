@@ -4,15 +4,18 @@ import { UserConfig } from "./config";
 import { ChatService } from "./features/chat/chat.service";
 import { chatHistoryVectorStore } from "./lib/Pinecone";
 import { prisma } from "./lib/Prisma";
+import { createMessageQueue, createRabbitMQClient } from "./lib/RabbitMQ";
 
 
-const chatService = new ChatService()
 
 export class LLMCore {
-    constructor(private server: Elysia) {
+    constructor(private server: Elysia, private chatService: ChatService) { }
+
+    public async init(): Promise<void> {
         const hostname = process.env.LISTEN_HOSTNAME
 
-        this.init();
+        await this.registerRoutes();
+
         if (hostname) {
             this.server.listen({
                 hostname,
@@ -26,7 +29,7 @@ export class LLMCore {
         }
     }
 
-    public async init(): Promise<void> {
+    private async registerRoutes(): Promise<void> {
         this.server.get("/", () => ({
             hello: "Node.js👋"
         }));
@@ -43,7 +46,7 @@ export class LLMCore {
                 return { error: "Invalid message format. Please provide a valid string." };
             }
 
-            const { aiResponse } = await chatService.addMessage(body.msg);
+            const { aiResponse } = await this.chatService.addMessage(body.msg);
             return {
                 message: "Message processed successfully",
                 status: "success",
@@ -69,7 +72,8 @@ export class LLMCore {
             });
 
             return {
-                message: "Register endpoint is not implemented yet.",
+                message: "Register successful",
+                status: "success",
                 body: body
             };
         });
@@ -102,15 +106,16 @@ export class LLMCore {
             };
         });
     }
-
-    public async listen(port: number): Promise<void> {
-        this.server.listen(port);
-        console.log(`Listening on http://localhost:${port}`);
-    }
 }
 
 export async function startServer(): Promise<void> {
     const server = new Elysia({ adapter: node() })
-    const llmCore = new LLMCore(server);
+
+    const rabbitMQClient = await createRabbitMQClient(process.env.RABBITMQ_URL || "amqp://localhost");
+    const MessageQueue = await createMessageQueue(rabbitMQClient);
+
+    const chatService = new ChatService(MessageQueue)
+
+    const llmCore = new LLMCore(server, chatService);
     await llmCore.init();
 }

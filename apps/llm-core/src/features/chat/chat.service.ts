@@ -4,6 +4,8 @@ import { createSystemPromot, UserConfig } from "../../config";
 import { llm } from "../../lib/LLMClient";
 import { chatHistoryVectorStore, userProfileVectorStore } from "../../lib/Pinecone";
 import { prisma } from "../../lib/Prisma";
+import { IMessageQueue } from "../../lib/RabbitMQ";
+import { chunkText } from "../../utils/chunking";
 import { getCurrentDateTimeInfo } from "../../utils/date";
 
 export interface IChatService {
@@ -16,7 +18,9 @@ export interface IChatService {
 export class ChatService implements IChatService {
     private messages: string[] = [];
 
-    constructor() { }
+    constructor(
+        private messageQueue: IMessageQueue
+    ) { }
 
     public async addMessage(message: string) {
         const userMessageId = uuidv4();
@@ -50,23 +54,7 @@ export class ChatService implements IChatService {
 
         console.log(existingMessage, 'Existing message in chat history:', userMessageId);
 
-        if (!existingMessage) {
-            console.log(existingMessage, 'User message already exists in chat history, skipping upsert');
-
-            try {
-                // 1. Tambahkan input user ke chat history
-                await chatHistoryVectorStore.upsert({
-                    data: message,
-                    role: 'user',
-                    messageId: userMessageId,
-                    coversationId: UserConfig.conersationId,
-                    userId: UserConfig.id
-                });
-            } catch (error) {
-                console.error('Error saat menyimpan pesan user ke chat history:', error);
-                throw new Error('Gagal menyimpan pesan user ke chat history');
-            }
-        }
+        const userMessageCreatedAt = Date.now();
 
         // 1. Simpan ke Database SQL (Source of Truth)
         await prisma.message.create({
@@ -81,7 +69,7 @@ export class ChatService implements IChatService {
                         id: userMessageId,
                         coversationId: UserConfig.conersationId,
                         userId: UserConfig.id,
-                        timestamp: Date.now(),
+                        timestamp: userMessageCreatedAt,
                         originalText: message as string,
                         role: 'assistant'
                     },
@@ -89,6 +77,33 @@ export class ChatService implements IChatService {
                 }
             }
         });
+
+        if (!existingMessage) {
+            console.log(existingMessage, 'User message already exists in chat history, skipping upsert');
+
+            try {
+                // 1. Tambahkan input user ke chat history
+                const userInputDocs = new Document({
+                    pageContent: message,
+                    metadata: {
+                        id: userMessageId,
+                        coversationId: UserConfig.conersationId,
+                        userId: UserConfig.id,
+                        timestamp: userMessageCreatedAt,
+                        originalText: message as string,
+                        role: 'user',
+                        messageId: userMessageId
+                    }
+                });
+
+                await chatHistoryVectorStore.upsert(userInputDocs);
+            } catch (error) {
+                console.error('Error saat menyimpan pesan user ke chat history:', error);
+                throw new Error('Gagal menyimpan pesan user ke chat history');
+            }
+        }
+
+
 
         console.log('Pesan user berhasil disimpan ke chat history:', message);
 
@@ -128,6 +143,8 @@ export class ChatService implements IChatService {
             .map((msg) => `[${msg.role}] (${new Date(msg.createdAt).toLocaleTimeString()}): ${msg.content}`)
             .reverse() || [];
 
+
+
         const systemPrompt = createSystemPromot.old(
             userProfileContext,
             chatHistoryContext,
@@ -138,13 +155,12 @@ export class ChatService implements IChatService {
         const fullPrompt = `${systemPrompt}\n\nfigo: ${message}\nKamu:`;
 
         let aiResponse: unknown;
+        let aiMessageCreatedAt: number | null = null;
 
         try {
-            const result = await llm.invoke([
-                ["system", systemPrompt],
-                ["human", message]
-            ]);
+            const result = await llm.invoke(fullPrompt);
             aiResponse = result.content
+            aiMessageCreatedAt = Date.now();
         } catch (error) {
             console.error('Error saat berinteraksi dengan LLM:', error);
             throw new Error('Gagal mendapatkan respons dari AI');
@@ -167,15 +183,6 @@ export class ChatService implements IChatService {
 
         const aiMessageId = uuidv4();
 
-        // 6. Simpan respons AI ke chat history
-        await chatHistoryVectorStore.upsert({
-            data: aiResponse as string,
-            role: 'assistant',
-            messageId: aiMessageId,
-            coversationId: UserConfig.conersationId,
-            userId: UserConfig.id
-        });
-
         // 7. Simpan respons AI ke Database SQL
         await prisma.message.create({
             data: {
@@ -189,7 +196,7 @@ export class ChatService implements IChatService {
                         id: aiMessageId,
                         coversationId: UserConfig.conersationId,
                         userId: UserConfig.id,
-                        timestamp: Date.now(),
+                        timestamp: aiMessageCreatedAt,
                         originalText: aiResponse as string,
                         role: 'assistant'
                     },
@@ -197,6 +204,50 @@ export class ChatService implements IChatService {
                 }
             }
         });
+
+
+        // chunking aiResponse if it is too long
+        const chunkSize = 800;
+        const chunkOverlap = 50;
+
+        const chunks: Document[] = await chunkText(aiResponse as string, {
+            chunkSize: chunkSize,
+            chunkOverlap: chunkOverlap
+        });
+
+        const docsToUpsert = chunks.map((chunk, index) => {
+            const chunkDocsId = uuidv4();
+
+            return new Document({
+                id: chunkDocsId,
+                pageContent: chunk.pageContent,
+                metadata: {
+                    id: chunkDocsId,
+                    coversationId: UserConfig.conersationId,
+                    userId: UserConfig.id,
+                    timestamp: aiMessageCreatedAt,
+                    chunkIndex: index,
+                    originalText: chunk.pageContent,
+                    role: 'assistant',
+                    messageId: aiMessageId
+                }
+            })
+        });
+
+
+
+        // 6. Simpan respons AI ke chat history
+        // await chatHistoryVectorStore.upsert({
+        //     data: aiResponse as string,
+        //     role: 'assistant',
+        //     messageId: aiMessageId,
+        //     coversationId: UserConfig.conersationId,
+        //     userId: UserConfig.id
+        // });
+
+        await chatHistoryVectorStore.addDocuments(docsToUpsert);
+
+
 
         return { aiResponse, fullPrompt };
     }

@@ -1,10 +1,10 @@
 // dontenv
+import { Document } from '@langchain/core/documents'; // Contoh, path bisa berbeda tergantung versi atau library
 import { PineconeStore } from '@langchain/pinecone';
 import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
 import 'dotenv/config';
 import { config } from '../config';
 import { embeddings } from './embedding';
-
 interface IupsertData {
     id: string;
     role: string;
@@ -25,40 +25,8 @@ class LangchainPineconeStore {
 
     constructor(private pc: PineconeStore) { }
 
-    public async upsert(params: IUpsertParams): Promise<void> {
-        const { data, role, messageId, coversationId, userId } = params;
-        const timestamp = Date.now();
-
-        if (role) {
-            await this.pc.addDocuments([
-                {
-                    id: messageId,
-                    metadata: {
-                        id: messageId,
-                        coversationId: coversationId,
-                        userId: userId,
-                        timestamp: timestamp,
-                        originalText: data,
-                        role: role
-                    },
-                    pageContent: data
-                }
-            ]);
-
-            return;
-        }
-
-        await this.pc.addDocuments([
-            {
-                id: messageId,
-                metadata: {
-                    id: messageId,
-                    timestamp: timestamp,
-                    originalText: data
-                },
-                pageContent: data
-            }
-        ]);
+    public async upsert(docs: Document): Promise<void> {
+        await this.pc.addDocuments([docs])
     }
 
     public async search(query: string, topK: number = 5): Promise<any> {
@@ -80,6 +48,10 @@ class LangchainPineconeStore {
             namespace: namespace,
             deleteAll: true
         })
+    }
+
+    public async addDocuments(docs: Document[]): Promise<void> {
+        await this.pc.addDocuments(docs);
     }
 }
 
