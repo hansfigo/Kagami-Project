@@ -29,7 +29,7 @@ class LangchainPineconeStore {
         await this.pc.addDocuments([docs])
     }
 
-    public async search(query: string, topK: number = 5): Promise<any> {
+    public async search(query: string, topK: number = 8): Promise<any> {
         return await this.pc.similaritySearch(
             query,
             topK
@@ -48,6 +48,13 @@ class LangchainPineconeStore {
             namespace: namespace,
             deleteAll: true
         })
+    }
+
+    public async deleteAll(): Promise<void> {
+        await this.pc.delete({
+            namespace: this.pc.namespace,
+            deleteAll: true
+        });
     }
 
     public async addDocuments(docs: Document[]): Promise<void> {

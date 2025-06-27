@@ -42,6 +42,7 @@ model Message {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   metadata       Json?        @default("{}")
+  fullPrompt     String?
   conversation   Conversation @relation(fields: [conversationId], references: [id])
 }
 
@@ -56,4 +57,15 @@ model UserFacts {
   updatedAt                 DateTime @updatedAt
   status                    String   @default("active")
   user                      User     @relation(fields: [userId], references: [id])
+}
+
+model AssistantFact {
+  id                        String   @id
+  fact                      String
+  source                    String   @default("manual")
+  status                    String   @default("active")
+  extracted_from_message_id String?
+  confidence                Float?   @default(0.0)
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
 }

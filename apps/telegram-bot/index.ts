@@ -3,6 +3,8 @@ import axios from 'axios';
 import 'dotenv/config';
 import TelegramBot from 'node-telegram-bot-api';
 
+const MAX_TELEGRAM_MESSAGE_LENGTH = 4000;
+
 // Ganti dengan TOKEN API bot Telegram-mu yang kamu dapat dari BotFather
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN
 
@@ -58,10 +60,16 @@ bot.on('message', async (msg) => {
 
         const llmResponse = response.data.data.response || response.data.text || 'Maaf, aku gak ngerti.';
 
-        await bot.sendMessage(chatId, llmResponse, {
-            parse_mode: 'Markdown',
-            disable_web_page_preview: true
-        });
+        if (llmResponse.length > MAX_TELEGRAM_MESSAGE_LENGTH) {
+            console.log('Pesan terlalu panjang, akan dipecah menjadi beberapa bagian.');
+            await sendLongMessageSafe(chatId, llmResponse);
+        } else {
+            await bot.sendMessage(chatId, llmResponse, {
+                parse_mode: 'Markdown',
+                disable_web_page_preview: true
+            });
+        }
+
         console.log(`Mengirim balasan ke ${chatId}: "${llmResponse}"`);
 
     } catch (error: any) {
@@ -69,6 +77,39 @@ bot.on('message', async (msg) => {
         await bot.sendMessage(chatId, 'Maaf, ada masalah saat memproses permintaanmu. Coba lagi nanti yaa.');
     }
 });
+
+
+async function sendLongMessageSafe(chatId: number, text: string): Promise<void> {
+    const lines = text.split('\n');
+    let currentPart = '';
+    const partsToSend: string[] = [];
+
+    for (const line of lines) {
+        if ((currentPart + line).length > MAX_TELEGRAM_MESSAGE_LENGTH && currentPart.length > 0) {
+
+            partsToSend.push(currentPart);
+            currentPart = '';
+        }
+        currentPart += (currentPart.length > 0 ? '\n' : '') + line;
+    }
+    if (currentPart.length > 0) {
+        partsToSend.push(currentPart);
+    }
+
+    for (const part of partsToSend) {
+        try {
+            await bot.sendMessage(chatId, part, {
+                parse_mode: 'Markdown',
+                disable_web_page_preview: true,
+            });
+        } catch (innerError: any) {
+            console.error(`Error sending part of message: ${innerError.message}. Part length: ${part.length}. Part content snippet: ${part.substring(0, 100)}...`);
+            await bot.sendMessage(chatId, part);
+        }
+        await new Promise(resolve => setTimeout(resolve, 300));
+    }
+}
+
 
 // Penanganan error sederhana
 bot.on('polling_error', (error) => {

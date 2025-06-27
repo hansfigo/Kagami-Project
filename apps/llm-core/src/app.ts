@@ -57,6 +57,25 @@ export class LLMCore {
             }
         })
 
+        this.server.post("/api/chat/search", async (ctx) => {
+            const body = ctx.body as { query: string };
+
+            if (!body.query || typeof body.query !== 'string') {
+                ctx.set.status = 400;
+                return { error: "Invalid message format. Please provide a valid string." };
+            }
+
+            const messages = await this.chatService.search(body.query);
+            return {
+                message: "Message processed successfully",
+                status: "success",
+                data: {
+                    query: body.query,
+                    result: messages
+                }
+            }
+        })
+
         this.server.post("/api/register", async (ctx) => {
             const body = ctx.body as { id: string, name: string, email: string, password: string, isActive?: boolean, isAdmin?: boolean };
 

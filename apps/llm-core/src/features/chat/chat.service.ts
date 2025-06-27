@@ -70,8 +70,9 @@ export class ChatService implements IChatService {
                         coversationId: UserConfig.conersationId,
                         userId: UserConfig.id,
                         timestamp: userMessageCreatedAt,
-                        originalText: message as string,
-                        role: 'assistant'
+                        role: 'assistant',
+                        chunkIndex: 0,
+
                     },
                     pageContent: message as string
                 }
@@ -90,9 +91,9 @@ export class ChatService implements IChatService {
                         coversationId: UserConfig.conersationId,
                         userId: UserConfig.id,
                         timestamp: userMessageCreatedAt,
-                        originalText: message as string,
                         role: 'user',
-                        messageId: userMessageId
+                        messageId: userMessageId,
+                        chunkIndex: 0,
                     }
                 });
 
@@ -102,8 +103,6 @@ export class ChatService implements IChatService {
                 throw new Error('Gagal menyimpan pesan user ke chat history');
             }
         }
-
-
 
         console.log('Pesan user berhasil disimpan ke chat history:', message);
 
@@ -115,7 +114,32 @@ export class ChatService implements IChatService {
         const relevantChat = await chatHistoryVectorStore.search(message);
 
         const chatHistoryContext = relevantChat
-            .map((doc: Document) => `[${doc.metadata.role}] (${new Date(doc.metadata.timestamp).toLocaleTimeString()}): ${doc.metadata.originalText}`)
+            .filter((doc: Document) => doc.pageContent && doc.pageContent.trim().length > 0)
+            .map((doc: Document) => {
+                const role = doc.metadata?.role || 'unknown';
+                const timestamp = doc.metadata?.timestamp || Date.now();
+                const originalText = doc.pageContent;
+
+                const dateObj = new Date(timestamp);
+
+                const formattedDate = dateObj.toLocaleDateString('id-ID', {
+                    year: 'numeric',
+                    month: 'numeric', // e.g., 6
+                    day: 'numeric',   // e.g., 27
+                    // timeZone: 'Asia/Jakarta'
+                }); // Output: "27/6/2025" atau "27/06/2025"
+
+                const formattedTime = dateObj.toLocaleTimeString('id-ID', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    // second: '2-digit', // Opsional
+                    hour12: false, // Untuk format 24 jam
+                    // timeZone: 'Asia/Jakarta'
+                }); // Output: "00.49.18"
+
+                // Gabungkan sesuai format yang kamu mau
+                return `[${role}] (${formattedDate} ${formattedTime}): ${originalText}`; // Output: [user] (27/6/2025 00.49.18):
+            })
             .reverse()
             .join('\n');
 
@@ -143,8 +167,6 @@ export class ChatService implements IChatService {
             .map((msg) => `[${msg.role}] (${new Date(msg.createdAt).toLocaleTimeString()}): ${msg.content}`)
             .reverse() || [];
 
-
-
         const systemPrompt = createSystemPromot.old(
             userProfileContext,
             chatHistoryContext,
@@ -158,7 +180,10 @@ export class ChatService implements IChatService {
         let aiMessageCreatedAt: number | null = null;
 
         try {
-            const result = await llm.invoke(fullPrompt);
+            const result = await llm.invoke(
+                [['system', systemPrompt],
+                ['human', message]]
+            );
             aiResponse = result.content
             aiMessageCreatedAt = Date.now();
         } catch (error) {
@@ -190,6 +215,7 @@ export class ChatService implements IChatService {
                 conversationId: UserConfig.conersationId,
                 content: aiResponse as string,
                 role: 'assistant',
+                fullPrompt: fullPrompt,
                 metadata: {
                     id: aiMessageId,
                     metadata: {
@@ -197,7 +223,6 @@ export class ChatService implements IChatService {
                         coversationId: UserConfig.conersationId,
                         userId: UserConfig.id,
                         timestamp: aiMessageCreatedAt,
-                        originalText: aiResponse as string,
                         role: 'assistant'
                     },
                     pageContent: aiResponse as string
@@ -208,7 +233,7 @@ export class ChatService implements IChatService {
 
         // chunking aiResponse if it is too long
         const chunkSize = 800;
-        const chunkOverlap = 50;
+        const chunkOverlap = 100;
 
         const chunks: Document[] = await chunkText(aiResponse as string, {
             chunkSize: chunkSize,
@@ -250,6 +275,19 @@ export class ChatService implements IChatService {
 
 
         return { aiResponse, fullPrompt };
+    }
+
+    public async search(query: string) {
+        if (!query || typeof query !== 'string') {
+            throw new Error("Invalid query format. Please provide a valid string.");
+        }
+
+        const results = await chatHistoryVectorStore.search(query, 10);
+        return results.map((doc: Document) => ({
+            role: doc.metadata.role,
+            content: doc.pageContent,
+            timestamp: new Date(doc.metadata.timestamp).toLocaleTimeString(),
+        }));
     }
 
     public getMessages(): string[] {

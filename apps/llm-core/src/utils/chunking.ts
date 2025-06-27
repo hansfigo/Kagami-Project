@@ -21,3 +21,18 @@ export async function chunkText(text: string, opt: IChunkTextOptions): Promise<D
 
     return docs;
 }
+
+
+
+export async function chunkTextDocs(doc: Document, opt: IChunkTextOptions): Promise<Document[]> {
+    const splitter = new RecursiveCharacterTextSplitter({
+        chunkSize: opt.chunkSize ?? 1000,
+        chunkOverlap: opt.chunkOverlap ?? 200,
+        separators: ['---\n\n', '\n\n', '\n', ' ', ''],
+    });
+    const docs = await splitter.splitDocuments([doc]);
+
+    return docs;
+}
+
+
