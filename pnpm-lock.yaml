@@ -117,6 +117,9 @@ importers:
       node-telegram-bot-api:
         specifier: ^0.66.0
         version: 0.66.0(request@2.88.2)
+      winston:
+        specifier: ^3.17.0
+        version: 3.17.0
     devDependencies:
       '@types/node':
         specifier: ^22.15.3

@@ -1,7 +1,8 @@
 // src/index.ts
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import 'dotenv/config';
 import TelegramBot from 'node-telegram-bot-api';
+import { logger } from './lib/logger';
 
 const MAX_TELEGRAM_MESSAGE_LENGTH = 4000;
 
@@ -17,9 +18,12 @@ const LLM_API_URL = process.env.LLM_API_URL || 'http://localhost:3000/api/chat';
 
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
 
-console.log('Bot Telegram sedang berjalan...');
+logger.info('Bot Telegram sedang berjalan...');
 
 bot.on('message', async (msg) => {
+    // Log pesan yang diterima
+    logger.info(`Menerima pesan dari ${msg.from?.first_name} (${msg.chat.id}): ${msg.text}`);
+
     const chatId = msg.chat.id;
     const userMessage = msg.text;
 
@@ -51,24 +55,54 @@ bot.on('message', async (msg) => {
 
     // get latest message from assistant manually if error occurs
     if (userMessage === '/l') {
-        const response = await axios.get(LLM_API_URL + '/latest');
+        await bot.sendChatAction(chatId, 'typing');
+        logger.info('Resend latest message command received.');
 
-        const latestMessage = response.data.data.latestMessage || 'Tidak ada pesan terbaru.';
+        logger.info(`Fetching latest message from LLM API at ${LLM_API_URL}latest`);
 
-        await bot.sendMessage(chatId, `Pesan terbaru dari asisten:\n\n${latestMessage}`, {
-            parse_mode: 'Markdown',
-            disable_web_page_preview: true
-        });
+        try {
+            const response = await axios.get(LLM_API_URL + 'latest');
 
-        console.log(`Mengirim pesan terbaru ke ${chatId}: "${latestMessage}"`);
+            if (!response.data || !response.data.data) {
+                logger.error('Response data tidak valid dari LLM API.');
+                await bot.sendMessage(chatId, 'Maaf, tidak ada pesan terbaru yang tersedia.');
+                return;
+            }
+
+            const latestMessage = response.data.data.latestMessage || 'Tidak ada pesan terbaru yang tersedia.';
+
+            await bot.sendMessage(chatId, `Pesan terakhir:`);
+            
+            await bot.sendMessage(chatId, latestMessage, {
+                parse_mode: 'Markdown',
+                disable_web_page_preview: true
+            });
+
+            logger.info(`Mengirim pesan terbaru ke ${chatId}: "${latestMessage}"`);
+            return;
+        } catch (error: any) {
+            if (error instanceof AxiosError) {
+                logger.error(`Error saat mengambil pesan terbaru: ${error.message}`);
+            }
+            logger.error('Error saat mengambil pesan terbaru:', error);
+            await bot.sendMessage(chatId, 'Maaf, ada masalah saat mengambil pesan terbaru. Coba lagi nanti yaa.');
+            return;
+        }
+    }
+
+    // check if message starts with / atau bukan teks
+    if (userMessage.startsWith('/') || typeof userMessage !== 'string') {
+        console.log('Pesan tidak valid atau bukan teks.');
+        await bot.sendMessage(chatId, 'Maaf, aku hanya bisa menjawab pesan teks biasa. Coba lagi yaa.');
         return;
     }
 
-    console.log(`Menerima pesan dari ${msg.from?.first_name}(${chatId}): ${userMessage}`);
+    console.log(`Menerima pesan dari ${msg.from?.first_name} (${chatId}): ${userMessage}`);
 
     await bot.sendChatAction(chatId, 'typing');
 
     try {
+        logger.info(`Mengirim pesan ke LLM API: "${userMessage}"`);
         const response = await axios.post(LLM_API_URL, {
             msg: userMessage
         });
@@ -76,7 +110,7 @@ bot.on('message', async (msg) => {
         const llmResponse = response.data.data.response || response.data.text || 'Maaf, aku gak ngerti.';
 
         if (llmResponse.length > MAX_TELEGRAM_MESSAGE_LENGTH) {
-            console.log('Pesan terlalu panjang, akan dipecah menjadi beberapa bagian.');
+            logger.info('Pesan terlalu panjang, akan dipecah menjadi beberapa bagian.');
             await sendLongMessageSafe(chatId, llmResponse);
         } else {
             await bot.sendMessage(chatId, llmResponse, {
@@ -88,21 +122,19 @@ bot.on('message', async (msg) => {
         console.log(`Mengirim balasan ke ${chatId}: "${llmResponse}"`);
 
     } catch (error: any) {
-        console.error('Error saat memanggil LLM API:', error.message, error);
-        
-        // Retry mechanism: coba ambil pesan terbaru jika ada error
+        console.error('Error saat memanggil LLM API:', error.message,);
+
         console.log('Mencoba mengambil pesan terbaru sebagai fallback...');
         try {
             await bot.sendChatAction(chatId, 'typing');
-            
+
             const latestResponse = await axios.get(LLM_API_URL + '/latest');
             const latestMessage = latestResponse.data.data.latestMessage || 'Tidak ada pesan terbaru yang tersedia.';
-            
+
             await bot.sendMessage(chatId, `Maaf, ada masalah teknis. Ini pesan terbaru dari asisten:\n\n${latestMessage}`, {
-                parse_mode: 'Markdown',
                 disable_web_page_preview: true
             });
-            
+
             console.log(`Berhasil mengirim pesan terbaru sebagai fallback ke ${chatId}`);
         } catch (fallbackError: any) {
             console.error('Error saat mengambil pesan terbaru:', fallbackError.message);
@@ -143,8 +175,3 @@ async function sendLongMessageSafe(chatId: number, text: string): Promise<void> 
     }
 }
 
-
-// Penanganan error sederhana
-bot.on('polling_error', (error) => {
-    console.error(`Polling error: ${error}`);
-});
