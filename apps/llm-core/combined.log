@@ -1,0 +1,39 @@
+{"level":"info","message":"Starting LLM Core Server..."}
+{"level":"info","message":"Using UserConfig: {\"id\":\"FIGOMAGERXYZ\",\"conversationId\":\"FIGO-TEST-1\"}"}
+{"level":"info","message":"Starting LLM Core Server..."}
+{"level":"info","message":"Using UserConfig: {\"id\":\"FIGOMAGERXYZ\",\"conversationId\":\"FIGO-TEST-1\"}"}
+{"level":"info","message":"Starting LLM Core Server..."}
+{"level":"info","message":"Using UserConfig: {\"id\":\"FIGOMAGERXYZ\",\"conversationId\":\"FIGO-TEST-1\"}"}
+{"level":"info","message":"Starting LLM Core Server...","timestamp":"2025-06-30T14:44:15.987Z"}
+{"level":"info","message":"Using UserConfig: {\"id\":\"FIGOMAGERXYZ\",\"conversationId\":\"FIGO-TEST-1\"}","timestamp":"2025-06-30T14:44:15.996Z"}
+{"level":"info","message":"Starting LLM Core Server...","timestamp":"2025-06-30T14:47:36.237Z"}
+{"level":"info","message":"Using UserConfig: {\"id\":\"FIGOMAGERXYZ\",\"conversationId\":\"FIGO-TEST-1\"}","timestamp":"2025-06-30T14:47:36.240Z"}
+2025-06-30T14:50:19.355Z [32minfo[39m: Starting LLM Core Server...
+2025-06-30T14:50:19.358Z [32minfo[39m: Using UserConfig: {"id":"FIGOMAGERXYZ","conversationId":"FIGO-TEST-1"}
+2025-06-30T14:50:42.845Z [[32minfo[39m] Starting LLM Core Server...
+2025-06-30T14:50:42.847Z [[32minfo[39m] Using UserConfig: {"id":"FIGOMAGERXYZ","conversationId":"FIGO-TEST-1"}
+21:51:29 [[32minfo[39m] Starting LLM Core Server...
+21:51:29 [[32minfo[39m] Using UserConfig: {"id":"FIGOMAGERXYZ","conversationId":"FIGO-TEST-1"}
+21:51:37 [[32minfo[39m] Starting LLM Core Server...
+21:51:37 [[32minfo[39m] Using UserConfig: {"id":"FIGOMAGERXYZ","conversationId":"FIGO-TEST-1"}
+21:52:20 [[32minfo[39m] Starting LLM Core Server...
+21:52:20 [[32minfo[39m] Using UserConfig: {"id":"FIGOMAGERXYZ","conversationId":"FIGO-TEST-1"}
+21:52:21 [[32minfo[39m] LLM Core Server is running on http://localhost:3000
+21:53:24 [[32minfo[39m] Starting LLM Core Server...
+21:53:24 [[32minfo[39m] Using UserConfig: {"id":"FIGOMAGERXYZ","conversationId":"FIGO-TEST-1"}
+21:53:25 [[32minfo[39m] LLM Core Server is running on http://localhost:3000
+21:54:01 [[32minfo[39m] Starting LLM Core Server...
+21:54:01 [[32minfo[39m] Using UserConfig: {"id":"FIGOMAGERXYZ","conversationId":"FIGO-TEST-1"}
+21:54:02 [[32minfo[39m] LLM Core Server is running on http://localhost:3000
+21:56:19 [[32minfo[39m] Starting LLM Core Server...
+21:56:19 [[32minfo[39m] Using UserConfig: {"id":"FIGOMAGERXYZ","conversationId":"FIGO-TEST-1"}
+21:56:20 [[32minfo[39m] LLM Core Server is running on http://localhost:3000
+21:58:42 [[32minfo[39m] Starting LLM Core Server...
+21:58:42 [[32minfo[39m] Using UserConfig: {"id":"FIGOMAGERXYZ","conversationId":"FIGO-TEST-1"}
+21:58:42 [[32minfo[39m] LLM Core Server is running on http://localhost:3000
+22:00:42 [[32minfo[39m] Starting LLM Core Server...
+22:00:42 [[32minfo[39m] Using UserConfig: {"id":"FIGOMAGERXYZ","conversationId":"FIGO-TEST-1"}
+22:00:43 [[32minfo[39m] LLM Core Server is running on http://localhost:3000
+22:01:49 [[32minfo[39m] Starting LLM Core Server...
+22:01:49 [[32minfo[39m] Using UserConfig: {"id":"FIGOMAGERXYZ","conversationId":"FIGO-TEST-1"}
+22:01:50 [[32minfo[39m] LLM Core Server is running on http://localhost:3000

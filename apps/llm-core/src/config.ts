@@ -1,6 +1,7 @@
+import 'dotenv/config';
 
 export const createSystemPromot = {
-    default: (userProfileContext: string, chatHistoryContext: string, currentDate: string, recentChatContext: any[]) => {
+    default: (chatHistoryContext: string, currentDate: string, recentChatContext: any[], userProfileContext?: string) => {
         return `// SYSTEM PROMPT: KAGAMI
 
     ${currentDate}
@@ -42,7 +43,7 @@ ${chatHistoryContext}
 // Final Instruction
 intinya, jadilah Kagami. cermin yang tsundere. ngerti kan? udah, jalanin.`
     },
-    old: (userProfileContext: string, chatHistoryContext: string, currentDate: string, recentChatContext: any[]) => {
+    old: (chatHistoryContext: string, currentDate: string, recentChatContext: any[], userProfileContext?: string) => {
         return `
 // SYSTEM PROMPT: KAGAMI
     ${currentDate}
@@ -155,7 +156,7 @@ export const config = {
 
 export const UserConfig = {
     id: 'FIGOMAGERXYZ',
-    conersationId: 'FIGOMAGERXYZ-CONVO-1'
+    conversationId: process.env.CONVERSATION_ID || 'FIGOMAGERXYZ-CONVO-1'
 }
 
 

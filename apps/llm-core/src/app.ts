@@ -5,6 +5,7 @@ import { ChatService } from "./features/chat/chat.service";
 import { chatHistoryVectorStore } from "./lib/Pinecone";
 import { prisma } from "./lib/Prisma";
 import { createMessageQueue, createRabbitMQClient } from "./lib/RabbitMQ";
+import { LEVEL, logger } from "./utils/logger";
 
 
 
@@ -21,11 +22,11 @@ export class LLMCore {
                 hostname,
                 port: 3000
             });
-            console.log(`LLM Core Server is running on http://${hostname}:3000`);
+            logger.info(`LLM Core Server is running on http://${hostname}:3000`);
         }
         else {
             this.server.listen(3000);
-            console.log("LLM Core Server is running on http://localhost:3000");
+            logger.info("LLM Core Server is running on http://localhost:3000");
         }
     }
 
@@ -39,20 +40,55 @@ export class LLMCore {
         }));
 
         this.server.post("/api/chat", async (ctx) => {
+            if (!ctx.body) {
+                logger.error("Request body is required.");
+                ctx.set.status = 400;
+                return { error: "Request body is required." };
+            }
             const body = ctx.body as { msg: string };
 
             if (!body.msg || typeof body.msg !== 'string') {
                 ctx.set.status = 400;
+                logger.error("Invalid message format. Please provide a valid string.");
                 return { error: "Invalid message format. Please provide a valid string." };
             }
 
+            logger.info(`Received message: ${body.msg}`);
+
+            logger.info(`Processing message for conversation ID: ${UserConfig.conversationId}`);
             const { aiResponse } = await this.chatService.addMessage(body.msg);
+
+            if (!aiResponse) {
+                ctx.set.status = 500;
+                logger.error("Failed to process message.");
+                return { error: "Failed to process message." };
+            }
+
+            logger.info("Message processed successfully, returning response.");
+
             return {
                 message: "Message processed successfully",
                 status: "success",
                 data: {
                     input: body.msg,
                     response: aiResponse
+                }
+            }
+        })
+
+        this.server.get("/api/chat/latest", async (ctx) => {
+            const latestMessage = await this.chatService.getLatestMessage();
+
+            if (latestMessage === null) {
+                ctx.set.status = 404;
+                return { error: "No messages found." };
+            }
+
+            return {
+                message: "Latest message retrieved successfully",
+                status: "success",
+                data: {
+                    latestMessage
                 }
             }
         })
@@ -128,6 +164,13 @@ export class LLMCore {
 }
 
 export async function startServer(): Promise<void> {
+
+    logger.info("Starting LLM Core Server...");
+    logger.log({
+        level: LEVEL.info,
+        message: `Using UserConfig: ${JSON.stringify(UserConfig)}`
+    })
+
     const server = new Elysia({ adapter: node() })
 
     const rabbitMQClient = await createRabbitMQClient(process.env.RABBITMQ_URL || "amqp://localhost");

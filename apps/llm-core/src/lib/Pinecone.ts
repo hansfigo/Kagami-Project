@@ -4,6 +4,7 @@ import { PineconeStore } from '@langchain/pinecone';
 import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
 import 'dotenv/config';
 import { config } from '../config';
+import { PineconeChunkMetadata } from '../types/pinecone.types';
 import { embeddings } from './embedding';
 interface IupsertData {
     id: string;
@@ -29,10 +30,11 @@ class LangchainPineconeStore {
         await this.pc.addDocuments([docs])
     }
 
-    public async search(query: string, topK: number = 8): Promise<any> {
+    public async search(query: string, topK: number = 8, filter?: Partial<PineconeChunkMetadata>): Promise<any> {
         return await this.pc.similaritySearch(
             query,
-            topK
+            topK,
+            filter
         );
     }
 

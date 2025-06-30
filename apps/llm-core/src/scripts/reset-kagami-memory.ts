@@ -29,7 +29,7 @@ export interface DbMessage {
 const getChatHistory = async (): Promise<DbMessage[]> => {
     return await prisma.message.findMany({
         where: {
-            conversationId: UserConfig.conersationId
+            conversationId: UserConfig.conversationId
         },
         orderBy: {
             createdAt: 'asc',
@@ -44,7 +44,7 @@ const chuckChatHistory = async (chatHistory: DbMessage[], chunkSize: number = 80
     for (const msgDb of chatHistory) {
         const content = msgDb.content;
         const baseMetadata = {
-            conversationId: msgDb.conversationId || UserConfig.conersationId,
+            conversationId: msgDb.conversationId || UserConfig.conversationId,
             userId: UserConfig.id,
             timestamp: msgDb.createdAt?.getTime() || Date.now(),
             role: msgDb.role as MessageRole,
@@ -69,9 +69,6 @@ const chuckChatHistory = async (chatHistory: DbMessage[], chunkSize: number = 80
             allChunksForPinecone.push(docs);
             continue;
         }
-
-
-
 
         const fulldocs: Document = new Document({
             id: msgDb.id,

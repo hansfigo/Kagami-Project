@@ -49,6 +49,21 @@ bot.on('message', async (msg) => {
         return;
     }
 
+    // get latest message from assistant manually if error occurs
+    if (userMessage === '/l') {
+        const response = await axios.get(LLM_API_URL + '/latest');
+
+        const latestMessage = response.data.data.latestMessage || 'Tidak ada pesan terbaru.';
+
+        await bot.sendMessage(chatId, `Pesan terbaru dari asisten:\n\n${latestMessage}`, {
+            parse_mode: 'Markdown',
+            disable_web_page_preview: true
+        });
+
+        console.log(`Mengirim pesan terbaru ke ${chatId}: "${latestMessage}"`);
+        return;
+    }
+
     console.log(`Menerima pesan dari ${msg.from?.first_name}(${chatId}): ${userMessage}`);
 
     await bot.sendChatAction(chatId, 'typing');
@@ -74,7 +89,25 @@ bot.on('message', async (msg) => {
 
     } catch (error: any) {
         console.error('Error saat memanggil LLM API:', error.message, error);
-        await bot.sendMessage(chatId, 'Maaf, ada masalah saat memproses permintaanmu. Coba lagi nanti yaa.');
+        
+        // Retry mechanism: coba ambil pesan terbaru jika ada error
+        console.log('Mencoba mengambil pesan terbaru sebagai fallback...');
+        try {
+            await bot.sendChatAction(chatId, 'typing');
+            
+            const latestResponse = await axios.get(LLM_API_URL + '/latest');
+            const latestMessage = latestResponse.data.data.latestMessage || 'Tidak ada pesan terbaru yang tersedia.';
+            
+            await bot.sendMessage(chatId, `Maaf, ada masalah teknis. Ini pesan terbaru dari asisten:\n\n${latestMessage}`, {
+                parse_mode: 'Markdown',
+                disable_web_page_preview: true
+            });
+            
+            console.log(`Berhasil mengirim pesan terbaru sebagai fallback ke ${chatId}`);
+        } catch (fallbackError: any) {
+            console.error('Error saat mengambil pesan terbaru:', fallbackError.message);
+            await bot.sendMessage(chatId, 'Maaf, ada masalah saat memproses permintaanmu. Coba lagi nanti yaa.');
+        }
     }
 });
 

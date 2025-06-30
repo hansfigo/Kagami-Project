@@ -1,3 +1,4 @@
+import { createLogger, format, transports } from 'winston';
 export class Logger {
     private static instance: Logger;
     private logs: string[] = [];
@@ -26,3 +27,32 @@ export class Logger {
         this.logs = [];
     }
 }
+
+
+export const LEVEL = {
+    error: 'error',
+    warn: 'warn',
+    info: 'info',
+    http: 'http',
+    verbose: 'verbose',
+    debug: 'debug',
+    silly: 'silly'
+};
+
+const devLoggerFormat = format.combine(
+    format.colorize(),
+    format.timestamp({ format: 'HH:mm:ss' }),
+    format.printf(({ timestamp, level, message }) => {
+        return `${timestamp} [${level}] ${message}`;
+    }
+    )
+);
+
+export const logger = createLogger({
+    format: devLoggerFormat,
+    level: 'info',
+    transports: [
+        new transports.Console(),
+        new transports.File({ filename: 'combined.log' })
+    ]
+});

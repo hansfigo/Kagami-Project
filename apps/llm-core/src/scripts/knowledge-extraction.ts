@@ -53,7 +53,7 @@ export const llm = new ChatGoogleGenerativeAI({
 const getChatHistory = async (): Promise<DbMessage[]> => {
     return await prisma.message.findMany({
         where: {
-            conversationId: UserConfig.conersationId
+            conversationId: UserConfig.conversationId
         },
         orderBy: {
             createdAt: 'asc',

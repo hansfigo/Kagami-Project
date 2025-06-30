@@ -7,12 +7,15 @@ import { prisma } from "../../lib/Prisma";
 import { IMessageQueue } from "../../lib/RabbitMQ";
 import { chunkText } from "../../utils/chunking";
 import { getCurrentDateTimeInfo } from "../../utils/date";
+import { logger } from "../../utils/logger";
+import { chatRepository } from "./chat.repository";
 
 export interface IChatService {
     addMessage(message: string): Promise<unknown>;
     getMessages(): string[];
     clearMessages(): void;
     getMessageCount(): number;
+    getLatestMessage(): Promise<string>;
 }
 
 export class ChatService implements IChatService {
@@ -25,60 +28,49 @@ export class ChatService implements IChatService {
     public async addMessage(message: string) {
         const userMessageId = uuidv4();
 
-        // check if user have default conversation
-        const userConversation = await prisma.conversation.findFirst({
-            where: {
-                userId: UserConfig.id,
-            }
-        });
 
-        if (!userConversation) {
-            await prisma.conversation.create({
-                data: {
-                    id: UserConfig.conersationId,
-                    userId: UserConfig.id,
-                    title: 'FIGOMAGER Default Conversation',
-                }
-            });
-        }
+        logger.info(`1 Checking if user conversation exists for user ID: ${UserConfig.id} and conversation ID: ${UserConfig.conversationId}`);
+        await checkIfUserConversationExists(UserConfig.id, UserConfig.conversationId);
+
+        logger.info(`2 Checking if user message is a duplicate for message ID: ${userMessageId}`);
+        const existingMessage = await checkIfUserMessageDuplicate(userMessageId)
+
+        // const userFacts = await userProfileVectorStore.search(message);
+        // const userProfileContext = userFacts.map((doc: Document) => doc.metadata.originalText).join('\n');
+
+        logger.info(`3 Getting relevant chat history context for message: ${message}`);
+        const chatHistoryContext = await getRelevantChatHistory(message);
+        const recentChatContextData = await getRecentChatHistory(UserConfig.id);
 
 
-        //check if userMessageId already exists in chat history
-        const existingMessage = await prisma.message.findFirst({
-            where: {
-                id: userMessageId,
-                conversationId: UserConfig.conersationId,
-                role: 'user',
-            }
-        });
+        logger.info(`4 Creating system prompt with chat history context, current date/time info, and recent chat context data`);
+        const systemPrompt = createSystemPromot.old(
+            chatHistoryContext,
+            getCurrentDateTimeInfo(),
+            recentChatContextData
+        );
 
-        console.log(existingMessage, 'Existing message in chat history:', userMessageId);
+        const fullPrompt = `${systemPrompt}\n\nfigo: ${message}\nKamu:`;
 
+        logger.info(`5 Calling LLM with message: ${message} and system prompt: ${systemPrompt}`);
+        const { aiResponse, aiMessageCreatedAt } = await callLLM(message, systemPrompt)
+
+        const aiMessageId = uuidv4();
         const userMessageCreatedAt = Date.now();
 
-        // 1. Simpan ke Database SQL (Source of Truth)
-        await prisma.message.create({
-            data: {
-                id: userMessageId,
-                conversationId: UserConfig.conersationId,
-                content: message,
-                role: 'user',
-                metadata: {
-                    id: userMessageId,
-                    metadata: {
-                        id: userMessageId,
-                        coversationId: UserConfig.conersationId,
-                        userId: UserConfig.id,
-                        timestamp: userMessageCreatedAt,
-                        role: 'assistant',
-                        chunkIndex: 0,
-
-                    },
-                    pageContent: message as string
-                }
-            }
+        logger.info(`6 Preparing to save chat message with IDs: userMessageId=${userMessageId}, aiMessageId=${aiMessageId}`);
+        // Simpan pesan ke database
+        await saveChatMessage({
+            userMessageId,
+            aiMessageId,
+            userMessageCreatedAt,
+            aiMessageCreatedAt,
+            message,
+            aiResponse,
+            systemPrompt
         });
 
+        logger.info(`7 Upserting user message to chat history vector store with ID: ${userMessageId}`);
         if (!existingMessage) {
             console.log(existingMessage, 'User message already exists in chat history, skipping upsert');
 
@@ -88,7 +80,7 @@ export class ChatService implements IChatService {
                     pageContent: message,
                     metadata: {
                         id: userMessageId,
-                        coversationId: UserConfig.conersationId,
+                        coversationId: UserConfig.conversationId,
                         userId: UserConfig.id,
                         timestamp: userMessageCreatedAt,
                         role: 'user',
@@ -104,14 +96,122 @@ export class ChatService implements IChatService {
             }
         }
 
-        console.log('Pesan user berhasil disimpan ke chat history:', message);
+        // chunking aiResponse if it is too long
+        const chunkSize = 800;
+        const chunkOverlap = 100;
 
-        // 2. Ambil fakta profil relevan tentang user
-        const userFacts = await userProfileVectorStore.search(message);
-        const userProfileContext = userFacts.map((doc: Document) => doc.metadata.originalText).join('\n');
+        logger.info(`8 Chunking AI response with chunk size: ${chunkSize} and chunk overlap: ${chunkOverlap}`);
+        const chunks: Document[] = await chunkText(aiResponse as string, {
+            chunkSize: chunkSize,
+            chunkOverlap: chunkOverlap
+        });
 
-        // 3. Ambil riwayat chat relevan (misal 5 menit terakhir dari user saja)
-        const relevantChat = await chatHistoryVectorStore.search(message);
+        const docsToUpsert = chunks.map((chunk, index) => {
+            const chunkDocsId = uuidv4();
+
+            return new Document({
+                id: chunkDocsId,
+                pageContent: chunk.pageContent,
+                metadata: {
+                    id: chunkDocsId,
+                    coversationId: UserConfig.conversationId,
+                    userId: UserConfig.id,
+                    timestamp: aiMessageCreatedAt,
+                    chunkIndex: index,
+                    originalText: chunk.pageContent,
+                    role: 'assistant',
+                    messageId: aiMessageId
+                }
+            })
+        });
+
+        logger.info(`9 Upserting AI response chunks to chat history vector store with IDs: ${docsToUpsert.map(doc => doc.metadata.id).join(', ')}`);
+        await chatHistoryVectorStore.addDocuments(docsToUpsert);
+
+        return { aiResponse, fullPrompt };
+    }
+
+    public async search(query: string) {
+        if (!query || typeof query !== 'string') {
+            throw new Error("Invalid query format. Please provide a valid string.");
+        }
+
+        const results = await chatHistoryVectorStore.search(query, 10);
+        return results.map((doc: Document) => ({
+            role: doc.metadata.role,
+            content: doc.pageContent,
+            timestamp: new Date(doc.metadata.timestamp).toLocaleTimeString(),
+        }));
+    }
+
+    public getMessages(): string[] {
+        return this.messages;
+    }
+
+    public clearMessages(): void {
+        this.messages = [];
+    }
+
+    public getMessageCount(): number {
+        return this.messages.length;
+    }
+
+    public async getLatestMessage(): Promise<string> {
+        const latestMessage = await chatRepository.getLatestMessage();
+
+        if (latestMessage === null) {
+            logger.warn('No messages found in the database');
+            return 'No messages found';
+        } else {
+            return latestMessage;
+        }
+    }
+}
+
+
+const getRecentChatHistory = async (userId: string): Promise<string[]> => {
+
+    try {
+        const userWithMessages = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            include: {
+                Conversation: {
+                    include: {
+                        messages: {
+                            orderBy: {
+                                createdAt: 'desc',
+                            },
+                            take: 5, // ambil 5 pesan terakhir
+                        },
+                    },
+                },
+            },
+        });
+
+        return userWithMessages?.Conversation
+            .flatMap((conversation) => conversation.messages)
+            .map((msg) => `[${msg.role}] (${new Date(msg.createdAt).toLocaleTimeString()}): ${msg.content}`)
+            .reverse() || [];
+
+    }
+    catch (error) {
+        logger.error(`Error getting recent chat history for user ${userId}:`, error);
+        throw new Error('Failed to retrieve recent chat history');
+    }
+}
+
+
+const getRelevantChatHistory = async (query: string): Promise<string> => {
+
+    const filter = {
+        conversationId: UserConfig.conversationId,
+    }
+
+    try {
+
+        const relevantChat = await chatHistoryVectorStore.search(query, 10, filter);
 
         const chatHistoryContext = relevantChat
             .filter((doc: Document) => doc.pageContent && doc.pageContent.trim().length > 0)
@@ -143,162 +243,137 @@ export class ChatService implements IChatService {
             .reverse()
             .join('\n');
 
-        // get chat history context with timestamp
-        const userWithMessages = await prisma.user.findUnique({
-            where: {
-                id: UserConfig.id,
-            },
-            include: {
-                Conversation: {
-                    include: {
-                        messages: {
-                            orderBy: {
-                                createdAt: 'desc',
-                            },
-                            take: 5, // ambil 5 pesan terakhir
-                        },
-                    },
-                },
-            },
-        });
+        return chatHistoryContext;
+    } catch (error) {
+        logger.error(`Error getting relevant chat history for query "${query}":`, error);
+        throw new Error('Failed to retrieve relevant chat history');
+    }
 
-        const recentChatContextData = userWithMessages?.Conversation
-            .flatMap((conversation) => conversation.messages)
-            .map((msg) => `[${msg.role}] (${new Date(msg.createdAt).toLocaleTimeString()}): ${msg.content}`)
-            .reverse() || [];
+}
 
-        const systemPrompt = createSystemPromot.old(
-            userProfileContext,
-            chatHistoryContext,
-            getCurrentDateTimeInfo(),
-            recentChatContextData
-        );
 
-        const fullPrompt = `${systemPrompt}\n\nfigo: ${message}\nKamu:`;
-
-        let aiResponse: unknown;
-        let aiMessageCreatedAt: number | null = null;
-
-        try {
-            const result = await llm.invoke(
-                [['system', systemPrompt],
-                ['human', message]]
-            );
-            aiResponse = result.content
-            aiMessageCreatedAt = Date.now();
-        } catch (error) {
-            console.error('Error saat berinteraksi dengan LLM:', error);
-            throw new Error('Gagal mendapatkan respons dari AI');
+const checkIfUserConversationExists = async (userId: string, conversationId: string): Promise<void> => {
+    const userConversation = await prisma.conversation.findFirst({
+        where: {
+            userId: userId,
+            id: conversationId
         }
+    });
 
-
-        //check if airesponse is already exists in chat history
-        const existingResponse = await prisma.message.findFirst({
-            where: {
-                content: aiResponse as string,
-                role: 'assistant',
-                conversationId: UserConfig.conersationId,
-            }
-        });
-
-        if (existingResponse) {
-            console.log('AI response already exists in chat history, skipping upsert');
-            return { aiResponse: existingResponse.content, fullPrompt };
-        }
-
-        const aiMessageId = uuidv4();
-
-        // 7. Simpan respons AI ke Database SQL
-        await prisma.message.create({
+    if (!userConversation) {
+        logger.info(`Conversation with ID ${conversationId} does not exist for user ${userId}, creating a new one.`);
+        await prisma.conversation.create({
             data: {
-                id: aiMessageId,
-                conversationId: UserConfig.conersationId,
-                content: aiResponse as string,
-                role: 'assistant',
-                fullPrompt: fullPrompt,
-                metadata: {
-                    id: aiMessageId,
-                    metadata: {
-                        id: aiMessageId,
-                        coversationId: UserConfig.conersationId,
-                        userId: UserConfig.id,
-                        timestamp: aiMessageCreatedAt,
-                        role: 'assistant'
-                    },
-                    pageContent: aiResponse as string
-                }
+                id: conversationId,
+                userId: userId,
+                title: 'FIGOMAGER Default Conversation',
             }
         });
 
-
-        // chunking aiResponse if it is too long
-        const chunkSize = 800;
-        const chunkOverlap = 100;
-
-        const chunks: Document[] = await chunkText(aiResponse as string, {
-            chunkSize: chunkSize,
-            chunkOverlap: chunkOverlap
-        });
-
-        const docsToUpsert = chunks.map((chunk, index) => {
-            const chunkDocsId = uuidv4();
-
-            return new Document({
-                id: chunkDocsId,
-                pageContent: chunk.pageContent,
-                metadata: {
-                    id: chunkDocsId,
-                    coversationId: UserConfig.conersationId,
-                    userId: UserConfig.id,
-                    timestamp: aiMessageCreatedAt,
-                    chunkIndex: index,
-                    originalText: chunk.pageContent,
-                    role: 'assistant',
-                    messageId: aiMessageId
-                }
-            })
-        });
-
-
-
-        // 6. Simpan respons AI ke chat history
-        // await chatHistoryVectorStore.upsert({
-        //     data: aiResponse as string,
-        //     role: 'assistant',
-        //     messageId: aiMessageId,
-        //     coversationId: UserConfig.conersationId,
-        //     userId: UserConfig.id
-        // });
-
-        await chatHistoryVectorStore.addDocuments(docsToUpsert);
-
-
-
-        return { aiResponse, fullPrompt };
-    }
-
-    public async search(query: string) {
-        if (!query || typeof query !== 'string') {
-            throw new Error("Invalid query format. Please provide a valid string.");
-        }
-
-        const results = await chatHistoryVectorStore.search(query, 10);
-        return results.map((doc: Document) => ({
-            role: doc.metadata.role,
-            content: doc.pageContent,
-            timestamp: new Date(doc.metadata.timestamp).toLocaleTimeString(),
-        }));
-    }
-
-    public getMessages(): string[] {
-        return this.messages;
-    }
-
-    public clearMessages(): void {
-        this.messages = [];
-    }
-
-    public getMessageCount(): number {
-        return this.messages.length;
+        logger.info(`Conversation with ID ${conversationId} created for user ${userId}`);
     }
 }
+
+
+const callLLM = async (message: string, systemPrompt: string): Promise<{ aiResponse: string; aiMessageCreatedAt: number }> => {
+
+    let aiResponse: string;
+    let aiMessageCreatedAt: number | null = null;
+
+
+    try {
+        const result = await llm.invoke(
+            [['system', systemPrompt],
+            ['human', message]]
+        );
+        aiResponse = result.content as string
+        aiMessageCreatedAt = Date.now();
+
+        return { aiResponse, aiMessageCreatedAt }
+    } catch (error) {
+        console.error('Error saat berinteraksi dengan LLM:', error);
+        throw new Error('Gagal mendapatkan respons dari AI');
+    }
+}
+
+
+const checkIfUserMessageDuplicate = async (userMessageId: string) => {
+    const existingMessage = await prisma.message.findFirst({
+        where: {
+            id: userMessageId,
+            conversationId: UserConfig.conversationId,
+            role: 'user',
+        }
+    });
+
+    return existingMessage
+}
+
+
+interface ISaveChatArgs {
+    userMessageId: string;
+    aiMessageId: string;
+    userMessageCreatedAt: number;
+    aiMessageCreatedAt: number;
+    message: string;
+    aiResponse: string;
+    systemPrompt: string;
+}
+
+
+const saveChatMessage = async (args: ISaveChatArgs) => {
+    const { userMessageId, aiMessageId, userMessageCreatedAt, aiMessageCreatedAt, message, aiResponse, systemPrompt } = args;
+    try {
+
+
+        await prisma.$transaction([
+            prisma.message.create({
+                data: {
+                    id: userMessageId,
+                    conversationId: UserConfig.conversationId,
+                    content: message,
+                    role: 'user',
+                    metadata: {
+                        id: userMessageId,
+                        metadata: {
+                            id: userMessageId,
+                            coversationId: UserConfig.conversationId,
+                            userId: UserConfig.id,
+                            timestamp: userMessageCreatedAt,
+                            role: 'assistant',
+                            chunkIndex: 0,
+
+                        },
+                        pageContent: message as string
+                    }
+                }
+            }),
+            prisma.message.create({
+                data: {
+                    id: aiMessageId,
+                    conversationId: UserConfig.conversationId,
+                    content: aiResponse as string,
+                    role: 'assistant',
+                    fullPrompt: systemPrompt,
+                    metadata: {
+                        id: aiMessageId,
+                        metadata: {
+                            id: aiMessageId,
+                            coversationId: UserConfig.conversationId,
+                            userId: UserConfig.id,
+                            timestamp: aiMessageCreatedAt,
+                            role: 'assistant'
+                        },
+                        pageContent: aiResponse as string
+                    }
+                }
+            })
+        ])
+
+
+    } catch (error) {
+        console.error('Error saat menyimpan pesan ke database:', error);
+        throw new Error('Gagal menyimpan pesan ke database');
+    }
+}
+
