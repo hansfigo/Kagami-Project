@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 export type MessageRole = 'user' | 'ai' | 'assistant';
-
 export interface IPineconeChunkMetadata {
     id: string;
     messageId: string;

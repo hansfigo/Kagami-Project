@@ -32,8 +32,8 @@ RUN pnpm install --prod --frozen-lockfile
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nextjs -u 1001
-USER nextjs
+RUN adduser -S madokami -u 1001
+USER madokami
 
 ENV NODE_ENV=production
 
