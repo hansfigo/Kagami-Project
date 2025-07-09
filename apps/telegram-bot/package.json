@@ -5,9 +5,11 @@
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc",
+    "build:image": "cd ../.. && docker buildx build --platform linux/arm64 -t ghcr.io/hansfigo/kagami-telegram-bot:latest -f apps/telegram-bot/Dockerfile . --push",
+    "build:image:local": "cd ../.. && docker build -t kagami-telegram-bot:local -f apps/telegram-bot/Dockerfile .",
     "dev": "nodemon --exec tsx src/index.ts",
     "test": "echo 'Run telegram bot tests manually by messaging the bot'",
-    "test:api": "curl -X POST http://localhost:3000/api/chat -H \"Content-Type: application/json\" -d '{\"text\":\"Test from telegram bot\"}'"
+    "test:api": "curl -X POST http://localhost:3001/api/chat -H \"Content-Type: application/json\" -d '{\"text\":\"Test from telegram bot\"}'"
   },
   "keywords": [],
   "author": "",
