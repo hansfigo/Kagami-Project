@@ -43,7 +43,23 @@ model Message {
   updatedAt      DateTime     @updatedAt
   metadata       Json?        @default("{}")
   fullPrompt     String?
+  hasImages      Boolean      @default(false)
   conversation   Conversation @relation(fields: [conversationId], references: [id])
+  images         MessageImage[]
+}
+
+model MessageImage {
+  id        String   @id @default(cuid())
+  messageId String
+  imageUrl  String   // URL atau path ke image
+  imageType String   // "base64", "url", "file_path"
+  mimeType  String?  // "image/jpeg", "image/png", etc.
+  size      Int?     // Size in bytes
+  metadata  Json?    @default("{}")
+  createdAt DateTime @default(now())
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
 }
 
 model UserFacts {

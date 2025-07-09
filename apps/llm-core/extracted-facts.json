@@ -1,0 +1,41 @@
+{
+  "extraction_date": "2025-07-07T07:30:13.562Z",
+  "total_facts": 7,
+  "extracted_facts": [
+    {
+      "fact": "Figo sering aktif pada malam hari.",
+      "category": "PERSONAL_HABITS",
+      "related_message_id": "de65b602-5530-4d4a-bb27-42cf99cfb161"
+    },
+    {
+      "fact": "Figo adalah developer yang sedang mengerjakan dan melakukan debugging pada Kagami.AI.",
+      "category": "PROJECTS",
+      "related_message_id": "9f20601b-e5eb-4d35-a6b4-25a44f65b677"
+    },
+    {
+      "fact": "Figo menggunakan Hoppscotch untuk berinteraksi dengan API Kagami.AI.",
+      "category": "PROFESSIONAL_SKILLS",
+      "related_message_id": "f813699f-49a8-44dc-8849-42a147010d6a"
+    },
+    {
+      "fact": "Figo memiliki akses dan kemampuan untuk memodifikasi system prompt Kagami.AI.",
+      "category": "PROJECTS",
+      "related_message_id": "b38f4103-c8b9-48ee-95f9-483a6742453b"
+    },
+    {
+      "fact": "Backend Kagami.AI berjalan di atas framework ElysiaJS.",
+      "category": "AI_IDENTITY",
+      "related_message_id": "f813699f-49a8-44dc-8849-42a147010d6a"
+    },
+    {
+      "fact": "Kagami.AI saat ini diakses melalui API, bukan lagi melalui terminal.",
+      "category": "AI_IDENTITY",
+      "related_message_id": "f813699f-49a8-44dc-8849-42a147010d6a"
+    },
+    {
+      "fact": "System prompt Kagami.AI telah diformat ulang menjadi bentuk daftar oleh Figo untuk memperbaiki bug.",
+      "category": "AI_IDENTITY",
+      "related_message_id": "b38f4103-c8b9-48ee-95f9-483a6742453b"
+    }
+  ]
+}

@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc",
-    "dev": "nodemon --exec tsx src/index.ts"
+    "dev": "nodemon --exec tsx src/index.ts",
+    "test": "echo 'Run telegram bot tests manually by messaging the bot'",
+    "test:api": "curl -X POST http://localhost:3000/api/chat -H \"Content-Type: application/json\" -d '{\"text\":\"Test from telegram bot\"}'"
   },
   "keywords": [],
   "author": "",

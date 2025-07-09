@@ -7,7 +7,7 @@
 import { Document } from "@langchain/core/documents";
 import { v4 as uuidv4 } from 'uuid';
 import { UserConfig } from "../config";
-import { chatHistoryVectorStore } from "../lib/Pinecone";
+import { chatHistoryGoogleVectorStore, chatHistoryVectorStore } from "../lib/Pinecone";
 import { prisma } from "../lib/Prisma";
 import { IPineconeChunkMetadata, MessageRole, PineconeChunkMetadataSchema } from "../types/pinecone.types";
 import { chunkTextDocs } from "../utils/chunking";
@@ -136,20 +136,70 @@ const startOperation = async () => {
 
 const nukeChatHistoryPineconeMemory = async () => {
     console.log("Deleting all existing chat history from Pinecone...");
-    chatHistoryVectorStore.deleteAll();
+    chatHistoryGoogleVectorStore.deleteAll();
     console.log("All existing chat history deleted from Pinecone.");
 }
 
 const reUpsertChatHistoryToPinecone = async (allChunksForPinecone: Document[]) => {
     console.log("Re-upserting chat history to Pinecone...");
-    await chatHistoryVectorStore.addDocuments(allChunksForPinecone);
+    
+    const BATCH_SIZE = 10; // Reduced batch size for better stability
+    const DELAY_BETWEEN_BATCHES = 2000; // 2 seconds delay between batches
+    const MAX_RETRIES = 3; // Maximum retry attempts per batch
+    const RETRY_DELAY = 5000; // 5 seconds delay before retry
+    
+    const totalChunks = allChunksForPinecone.length;
+    const totalBatches = Math.ceil(totalChunks / BATCH_SIZE);
+    
+    console.log(`Processing ${totalChunks} chunks in ${totalBatches} batches (batch size: ${BATCH_SIZE})`);
+    console.log(`Delay between batches: ${DELAY_BETWEEN_BATCHES}ms`);
+    
+    for (let i = 0; i < totalBatches; i++) {
+        const startIndex = i * BATCH_SIZE;
+        const endIndex = Math.min(startIndex + BATCH_SIZE, totalChunks);
+        const batch = allChunksForPinecone.slice(startIndex, endIndex);
+        
+        console.log(`Processing batch ${i + 1}/${totalBatches} (${batch.length} chunks)`);
+        
+        let success = false;
+        let retryCount = 0;
+        
+        while (!success && retryCount <= MAX_RETRIES) {
+            try {
+                if (retryCount > 0) {
+                    console.log(`🔄 Retry attempt ${retryCount}/${MAX_RETRIES} for batch ${i + 1}`);
+                    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+                }
+                
+                await chatHistoryGoogleVectorStore.addDocuments(batch);
+                console.log(`✓ Batch ${i + 1} completed successfully`);
+                success = true;
+                
+                // Add delay between batches to avoid rate limiting
+                if (i < totalBatches - 1) {
+                    console.log(`⏳ Waiting ${DELAY_BETWEEN_BATCHES}ms before next batch...`);
+                    await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES));
+                }
+                
+            } catch (error) {
+                retryCount++;
+                console.error(`✗ Error processing batch ${i + 1} (attempt ${retryCount}):`, error);
+                
+                if (retryCount > MAX_RETRIES) {
+                    console.error(`❌ Failed to process batch ${i + 1} after ${MAX_RETRIES} retries. Stopping operation.`);
+                    throw error;
+                }
+            }
+        }
+    }
+    
     console.log("Chat history re-upserted to Pinecone successfully.");
 }
 
 (async () => {
     try {
         console.log("Starting reset operation...");
-        // await startOperation();
+        await startOperation();
         console.log("Reset operation completed successfully.");
     } catch (error) {
         console.error("Error during reset operation:", error);

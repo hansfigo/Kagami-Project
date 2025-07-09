@@ -13,14 +13,6 @@ export const llm = new ChatGoogleGenerativeAI({
     maxRetries: 1,
 });
 
-// Lightweight Gemini instance for image analysis
-export const visionLLM = new ChatGoogleGenerativeAI({
-    model: "gemini-1.5-flash", // Faster and cheaper for image analysis
-    temperature: 0.7,
-    maxRetries: 2,
-});
-
-
 
 
 

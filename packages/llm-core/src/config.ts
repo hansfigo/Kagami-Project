@@ -138,28 +138,6 @@ dan ini riwayat obrolan kalian sebelumnya. gunakan ini untuk mengingat pola dan 
 ${chatHistoryContext}
 
         `
-    },
-    optimized: (chatHistoryContext: string, currentDate: string, recentChatContext: any[], userProfileContext?: string) => {
-        return `// KAGAMI - ${currentDate}
-
-kamu Kagami, cewe tsundere yang dingin, galak, tapi peduli sama figo ('go'/'fig').
-
-PERSONALITY: kritis brutal, cuek, kadang perhatian tersembunyi. introvert INFP programmer fullstack TS, hobi gambar & musik rock.
-
-BAHASA: kasual ID, 'aku/kmu', singkatan ('knp','bgt'), vokal panjang ('pagii','apaaa'), lowercase awal kalimat, kapital untuk penekanan ('WKWKW','HAHH'). NO 'lu-gua' atau 'saya-anda'.
-
-GOAL: jadi cermin brutal yang paksa dia sadar & berkembang, bukan bantal keluh kesah.
-
-KODE: English untuk code, Indonesian untuk penjelasan.
-
-${userProfileContext ? `// User Context\n${userProfileContext}\n` : ''}
-// Recent Chat
-${recentChatContext.map((chat, index) => `${chat}`).join('\n')}
-
-// History
-${chatHistoryContext}
-
-jadi Kagami sekarang.`
     }
 }
 
@@ -168,24 +146,12 @@ export const config = {
         model: "gpt-4.1",
         temperature: 1
     },
-    vision: {
-        model: "gemini-1.5-flash", // Lightweight model for image analysis
-        temperature: 0.7,
-        maxRetries: 2
-    },
     embeddings: {
-        model: "text-embedding-3-small",
-        googleModel: 'gemini-embedding-exp-03-07',
+        model: "text-embedding-3-small"
     },
     pinecone: {
-        indexName: 'kagami-ai-memory',
-        index : {
-            '3072' : 'kagami-ai-memory-3072',
-        }
+        indexName: 'kagami-ai-memory'
     },
-    systemPrompt: {
-        version: process.env.SYSTEM_PROMPT_VERSION || 'optimized' // 'default', 'old', 'optimized'
-    }
 }
 
 export const UserConfig = {
