@@ -161,7 +161,7 @@ async function handleSingleMessage(msg: TelegramBot.Message) {
             '💡 *Tips:*\n' +
             '• Berikan caption yang jelas pada gambar\n' +
             '• Gunakan bahasa natural seperti "Jelaskan gambar ini"\n' +
-            '• Bot support multiple images sekaligus !',
+            '• Bot support multiple images sekaligus !!',
             { parse_mode: 'Markdown' }
         );
         return;
