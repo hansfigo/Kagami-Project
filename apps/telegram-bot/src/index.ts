@@ -128,16 +128,29 @@ async function processMediaGroup(mediaGroupId: string, chatId: number) {
             });
         }
 
-        logger.info(`Mengirim balasan media group ke ${chatId}: "${llmResponse.substring(0, 100)}..."`);
+        logger.info(`Mengirim balasan media group ke ${chatId}`);
     } catch (error: any) {
         logger.error(`Error processing media group: ${error.message}`);
-        await bot.sendMessage(chatId, 'Maaf, ada masalah saat memproses album gambar. Coba lagi nanti yaa.');
+        
+        const errorMessage = `🖼️ *Error Memproses Album Gambar*\n\n` +
+            `❌ **Error:** ${error.message}\n` +
+            `📊 **Album Info:** ${messages.length} gambar\n` +
+            `🕐 **Time:** ${new Date().toLocaleString('id-ID')}\n\n` +
+            `💡 **Saran:**\n` +
+            `• Coba kirim gambar satu per satu\n` +
+            `• Pastikan semua gambar berformat JPG/PNG\n` +
+            `• Kurangi jumlah gambar dalam album`;
+
+        await bot.sendMessage(chatId, errorMessage, {
+            parse_mode: 'Markdown',
+            disable_web_page_preview: true
+        });
     }
 }
 
 async function handleSingleMessage(msg: TelegramBot.Message) {
     // Log pesan yang diterima
-    logger.info(`Menerima pesan dari ${msg.from?.first_name} (${msg.chat.id}): ${msg.text || (msg.photo ? 'Photo message' : 'Non-text message')}`);
+    logger.info(`Menerima pesan dari ${msg.from?.first_name}`);
 
     const chatId = msg.chat.id;
     const userMessage = msg.text;
@@ -211,7 +224,7 @@ async function handlePhotoMessage(msg: TelegramBot.Message, chatId: number) {
         const photo = photos[photos.length - 1];
         const fileId = photo.file_id;
         
-        logger.info(`Processing photo message from ${msg.from?.first_name} (${chatId}), fileId: ${fileId}`);
+        logger.info(`Processing photo message from ${msg.from?.first_name}`);
 
         // Get file info from Telegram
         const fileInfo = await bot.getFile(fileId);
@@ -227,7 +240,7 @@ async function handlePhotoMessage(msg: TelegramBot.Message, chatId: number) {
         // Get caption as text (if any)
         const caption = msg.caption || 'Apa yang kamu lihat di gambar ini?';
         
-        logger.info(`Sending image + text to LLM API: "${caption}"`);
+        logger.info(`Sending image + text to LLM API`);
         
         // Send to multimodal endpoint
         const response = await axios.post(LLM_API_URL, {
@@ -247,10 +260,22 @@ async function handlePhotoMessage(msg: TelegramBot.Message, chatId: number) {
             });
         }
 
-        logger.info(`Mengirim balasan image ke ${chatId}: "${llmResponse.substring(0, 100)}..."`);
     } catch (error: any) {
         logger.error(`Error processing photo message: ${error.message}`);
-        await bot.sendMessage(chatId, 'Maaf, ada masalah saat memproses gambar. Coba lagi nanti yaa.');
+        
+        // Send detailed error for photo processing
+        const errorMessage = `📸 *Error Memproses Gambar*\n\n` +
+            `❌ **Error:** ${error.message}\n` +
+            `🕐 **Time:** ${new Date().toLocaleString('id-ID')}\n\n` +
+            `💡 **Saran:**\n` +
+            `• Coba kirim gambar dengan format JPG/PNG\n` +
+            `• Pastikan ukuran gambar tidak terlalu besar\n` +
+            `• Coba kirim ulang dengan caption yang berbeda`;
+
+        await bot.sendMessage(chatId, errorMessage, {
+            parse_mode: 'Markdown',
+            disable_web_page_preview: true
+        });
     }
 }
 
@@ -285,7 +310,7 @@ async function handleTextMessage(msg: TelegramBot.Message, chatId: number, userM
                 await sendLongMessageSafe(chatId, latestMessage);
             }
 
-            logger.info(`Mengirim pesan terbaru ke ${chatId}: "${latestMessage.substring(0, 100)}..."`);
+            logger.info(`Mengirim pesan terbaru ke ${chatId}`);
             return;
         } catch (error: any) {
             if (error instanceof AxiosError) {
@@ -312,6 +337,34 @@ async function handleTextMessage(msg: TelegramBot.Message, chatId: number, userM
             msg: userMessage
         });
 
+        // Check if response indicates an error with fallback
+        if (response.data.status === "error_with_fallback") {
+            const errorDetails = response.data.details;
+            const fallbackResponse = response.data.fallbackResponse || 'Tidak ada respons fallback tersedia.';
+            
+            // Send detailed error information to user
+            const errorMessage = `⚠️ *Terjadi Masalah Teknis*\n\n` +
+                `🔍 *Error Details:*\n` +
+                `• **Type:** ${errorDetails.type || 'Unknown'}\n` +
+                `• **Step:** ${errorDetails.step || 'Unknown'}\n` +
+                `• **Duration:** ${errorDetails.duration || 'N/A'}\n` +
+                `• **Time:** ${errorDetails.timestamp ? new Date(errorDetails.timestamp).toLocaleString('id-ID') : 'N/A'}\n\n` +
+                `❌ **Error:** ${errorDetails.message || 'Unknown error'}\n\n` +
+                `💬 **Fallback Response:**\n${fallbackResponse}`;
+
+            if (errorMessage.length > MAX_TELEGRAM_MESSAGE_LENGTH) {
+                await sendLongMessageSafe(chatId, errorMessage);
+            } else {
+                await bot.sendMessage(chatId, errorMessage, {
+                    parse_mode: 'Markdown',
+                    disable_web_page_preview: true
+                });
+            }
+            
+            logger.info(`Sent error details with fallback to ${chatId}`);
+            return;
+        }
+
         const llmResponse = response.data.data.response || response.data.text || 'Maaf, aku gak ngerti.';
 
         if (llmResponse.length > MAX_TELEGRAM_MESSAGE_LENGTH) {
@@ -324,25 +377,69 @@ async function handleTextMessage(msg: TelegramBot.Message, chatId: number, userM
             });
         }
 
-        logger.info(`Mengirim balasan ke ${chatId}: "${llmResponse}"`);
+        logger.info(`Mengirim balasan ke ${chatId}`);
     } catch (error: any) {
         logger.error(`Error saat mengirim pesan ke LLM API: ${error}`);
+
+        // Extract more detailed error information
+        let errorDetails = {
+            message: 'Unknown error',
+            status: 'N/A',
+            type: 'Network/API Error'
+        };
+
+        if (error.response) {
+            // Server responded with error status
+            errorDetails = {
+                message: error.response.data?.details?.message || error.response.data?.error || 'Server error',
+                status: error.response.status,
+                type: error.response.data?.details?.type || 'Server Error'
+            };
+        } else if (error.request) {
+            // Network error
+            errorDetails = {
+                message: 'Tidak dapat terhubung ke server',
+                status: 'No Response',
+                type: 'Network Error'
+            };
+        } else {
+            // Other error
+            errorDetails = {
+                message: error.message || 'Unknown error',
+                status: 'N/A',
+                type: 'Client Error'
+            };
+        }
 
         try {
             await bot.sendChatAction(chatId, 'typing');
 
-            const latestResponse = await axios.get(LLM_API_URL + 'latest');
-            const latestMessage = latestResponse.data.data.latestMessage || 'Tidak ada pesan terbaru yang tersedia.';
+            // Send detailed error to user
+            const userErrorMessage = `🚨 *Error Komunikasi dengan Server*\n\n` +
+                `🔍 **Details:**\n` +
+                `• **Type:** ${errorDetails.type}\n` +
+                `• **Status:** ${errorDetails.status}\n` +
+                `• **Message:** ${errorDetails.message}\n` +
+                `• **Time:** ${new Date().toLocaleString('id-ID')}\n\n`
+                ;
 
-            // Use sendLongMessageSafe for consistent Markdown handling
-            const fallbackMessage = `Maaf, ada masalah teknis. Ini pesan terbaru dari asisten:\n\n${latestMessage}`;
-            await sendLongMessageSafe(chatId, fallbackMessage);
+            await bot.sendMessage(chatId, userErrorMessage, {
+                parse_mode: 'Markdown',
+                disable_web_page_preview: true
+            });
 
-            logger.info(`Mengirim pesan fallback ke ${chatId}: "${latestMessage.substring(0, 100)}..."`);
+            // // Try to get latest message as fallback
+            // const latestResponse = await axios.get(LLM_API_URL + 'latest');
+            // const latestMessage = latestResponse.data.data.latestMessage || 'Tidak ada pesan terbaru yang tersedia.';
+
+            // const fallbackMessage = `✅ *Pesan Terbaru (Fallback):*\n\n${latestMessage}`;
+            // await sendLongMessageSafe(chatId, fallbackMessage);
+
+            logger.info(`Mengirim pesan fallback dengan error details ke ${chatId}`);
 
         } catch (fallbackError: any) {
             logger.error(`Error saat mengirim pesan fallback: ${fallbackError.message}`);
-            await bot.sendMessage(chatId, 'Maaf, ada masalah saat memproses permintaanmu. Coba lagi nanti yaa.');
+            await bot.sendMessage(chatId, `💥 *Critical Error*\n\nTidak dapat terhubung ke server sama sekali.\n\n**Error:** ${fallbackError.message}\n**Time:** ${new Date().toLocaleString('id-ID')}\n\nSilakan coba lagi nanti atau hubungi admin.`);
         }
     }
 }
@@ -367,21 +464,35 @@ async function sendLongMessageSafe(chatId: number, text: string): Promise<void> 
         } catch (error: any) {
             logger.error(`Error sending single message with Markdown: ${error.message}`);
             
-            // Try to fix Markdown and resend
-            const fixedText = fixMarkdownInChunk(normalizedText);
+            // Try aggressive Markdown sanitization first
+            const sanitizedText = aggressiveSanitizeMarkdown(normalizedText);
             try {
-                await bot.sendMessage(chatId, fixedText, {
+                await bot.sendMessage(chatId, sanitizedText, {
                     parse_mode: 'Markdown',
                     disable_web_page_preview: true,
                 });
                 return;
             } catch (retryError: any) {
-                logger.error(`Error sending fixed Markdown: ${retryError.message}`);
-                // Fallback: send without Markdown
-                await bot.sendMessage(chatId, normalizedText, {
-                    disable_web_page_preview: true,
-                });
-                return;
+                logger.error(`Error sending sanitized Markdown: ${retryError.message}`);
+                
+                // Try with MarkdownV2
+                try {
+                    const markdownV2Text = convertToMarkdownV2(normalizedText);
+                    await bot.sendMessage(chatId, markdownV2Text, {
+                        parse_mode: 'MarkdownV2',
+                        disable_web_page_preview: true,
+                    });
+                    return;
+                } catch (v2Error: any) {
+                    logger.error(`Error sending MarkdownV2: ${v2Error.message}`);
+                    
+                    // Final fallback: send without any formatting
+                    const plainText = stripAllMarkdown(normalizedText);
+                    await bot.sendMessage(chatId, plainText, {
+                        disable_web_page_preview: true,
+                    });
+                    return;
+                }
             }
         }
     }
@@ -420,24 +531,37 @@ async function sendLongMessageSafe(chatId: number, text: string): Promise<void> 
         } catch (error: any) {
             logger.error(`Error sending chunk ${i + 1} with Markdown: ${error.message}`);
             
-            // Try to fix Markdown and resend
+            // Try aggressive sanitization first
             try {
-                const fixedChunk = fixMarkdownInChunk(finalChunk);
-                await bot.sendMessage(chatId, fixedChunk, {
+                const sanitizedChunk = aggressiveSanitizeMarkdown(finalChunk);
+                await bot.sendMessage(chatId, sanitizedChunk, {
                     parse_mode: 'Markdown',
                     disable_web_page_preview: true,
                 });
-            } catch (retryError: any) {
-                logger.error(`Error sending fixed chunk ${i + 1}: ${retryError.message}`);
-                // Fallback: send without Markdown
+            } catch (sanitizeError: any) {
+                logger.error(`Error sending sanitized chunk ${i + 1}: ${sanitizeError.message}`);
+                
+                // Try MarkdownV2
                 try {
-                    await bot.sendMessage(chatId, finalChunk, {
+                    const v2Chunk = convertToMarkdownV2(finalChunk);
+                    await bot.sendMessage(chatId, v2Chunk, {
+                        parse_mode: 'MarkdownV2',
                         disable_web_page_preview: true,
                     });
-                } catch (fallbackError: any) {
-                    logger.error(`Error sending chunk ${i + 1} without Markdown: ${fallbackError.message}`);
-                    // Last resort: send plain text notification
-                    await bot.sendMessage(chatId, `[Error mengirim bagian ${i + 1} dari ${chunks.length}]`);
+                } catch (v2Error: any) {
+                    logger.error(`Error sending MarkdownV2 chunk ${i + 1}: ${v2Error.message}`);
+                    
+                    // Final fallback: send plain text
+                    try {
+                        const plainChunk = stripAllMarkdown(finalChunk);
+                        await bot.sendMessage(chatId, plainChunk, {
+                            disable_web_page_preview: true,
+                        });
+                    } catch (fallbackError: any) {
+                        logger.error(`Error sending plain chunk ${i + 1}: ${fallbackError.message}`);
+                        // Last resort: send error notification
+                        await bot.sendMessage(chatId, `[Error mengirim bagian ${i + 1} dari ${chunks.length}]`);
+                    }
                 }
             }
         }
@@ -908,5 +1032,86 @@ function normalizeText(text: string): string {
         .join('\n')
         // Final trim
         .trim();
+}
+
+/**
+ * Aggressively sanitize Markdown to prevent Telegram entity parsing errors
+ */
+function aggressiveSanitizeMarkdown(text: string): string {
+    let sanitized = text;
+    
+    // Log the problematic area around byte offset 715
+    logger.info(`Sanitizing text of length ${text.length}`);
+    if (text.length > 700 && text.length < 800) {
+        logger.info(`Text around offset 715: "${text.substring(700, 730)}"`);
+    }
+    
+    // First, fix common Markdown issues
+    sanitized = fixMarkdownInChunk(sanitized);
+    
+    // Remove or escape problematic characters that might cause entity parsing issues
+    sanitized = sanitized
+        // Remove zero-width characters
+        .replace(/[\u200B-\u200D\uFEFF]/g, '')
+        // Fix mixed bold/italic patterns that might confuse parser
+        .replace(/\*{3,}/g, '**')
+        // Ensure code blocks are properly formatted
+        .replace(/`{4,}/g, '```')
+        // Fix malformed links
+        .replace(/\[([^\]]*)\]\([^)]*\s+[^)]*\)/g, '[$1]()')
+        // Remove orphaned link syntax
+        .replace(/\]\([^)]*$/g, ']')
+        .replace(/^\([^[]*\[/g, '[')
+        // Escape problematic characters in specific contexts
+        .replace(/([^\\])_([^_]*$)/g, '$1\\_$2')
+        .replace(/([^\\])\*([^*]*$)/g, '$1\\*$2');
+    
+    return sanitized;
+}
+
+/**
+ * Convert text to MarkdownV2 format (stricter but more reliable)
+ */
+function convertToMarkdownV2(text: string): string {
+    // MarkdownV2 requires escaping more characters
+    const specialChars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
+    
+    let converted = text;
+    
+    // First strip all existing markdown to avoid conflicts
+    converted = stripAllMarkdown(converted);
+    
+    // Escape special characters
+    for (const char of specialChars) {
+        const regex = new RegExp(`\\${char}`, 'g');
+        converted = converted.replace(regex, `\\${char}`);
+    }
+    
+    return converted;
+}
+
+/**
+ * Strip all Markdown formatting and return plain text
+ */
+function stripAllMarkdown(text: string): string {
+    return text
+        // Remove code blocks
+        .replace(/```[\s\S]*?```/g, (match) => {
+            return match.replace(/```\w*\n?/g, '').replace(/```/g, '');
+        })
+        // Remove inline code
+        .replace(/`([^`]+)`/g, '$1')
+        // Remove bold
+        .replace(/\*\*([^*]+)\*\*/g, '$1')
+        // Remove italic
+        .replace(/\*([^*]+)\*/g, '$1')
+        // Remove strikethrough
+        .replace(/~~([^~]+)~~/g, '$1')
+        // Remove underline
+        .replace(/__([^_]+)__/g, '$1')
+        // Remove links but keep text
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+        // Remove remaining markdown symbols
+        .replace(/[*_~`#>\-+=|{}[\]()!]/g, '');
 }
 

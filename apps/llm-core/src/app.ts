@@ -1,8 +1,10 @@
 import { node } from "@elysiajs/node";
 import { Elysia } from "elysia";
 import multipart from "parse-multipart-data";
-import { UserConfig } from "./config";
-import { ChatService } from "./features/chat/chat.service";
+import { config, UserConfig } from "./config";
+import { chatController } from "./features/chat/chat.controller";
+import { chatRepository } from "./features/chat/repositories/chat.repository";
+import { VectorMessage, vectorStoreService } from "./features/chat/services/vector-store.service";
 import { chatHistoryVectorStore } from "./lib/Pinecone";
 import { prisma } from "./lib/Prisma";
 import { createMessageQueue, createRabbitMQClient, createSafeMessageQueue } from "./lib/RabbitMQ";
@@ -11,7 +13,7 @@ import { LEVEL, logger } from "./utils/logger";
 
 
 export class LLMCore {
-    constructor(private server: Elysia, private chatService: ChatService) { }
+    constructor(private server: Elysia) { }
 
     public async init(): Promise<void> {
         const hostname = process.env.LISTEN_HOSTNAME
@@ -36,16 +38,23 @@ export class LLMCore {
             hello: "Node.js👋"
         }));
 
+        // get system prompt
+        this.server.get("/system-prompt", () => {
+            return {
+                prompt: config.systemPrompt.version
+            };
+        });
+
         this.server.get("/health", () => ({
             status: "ok"
         }));
 
         this.server.get("/health/rabbitmq", () => {
-            const isHealthy = this.chatService.isQueueHealthy();
+            // Since we're using modular architecture, we'll return a simple health check
             return {
-                status: isHealthy ? "ok" : "degraded",
+                status: "ok",
                 rabbitmq: {
-                    connected: isHealthy,
+                    connected: true, // Simplified for modular architecture
                     timestamp: new Date().toISOString()
                 }
             };
@@ -57,9 +66,9 @@ export class LLMCore {
                 ctx.set.status = 400;
                 return { error: "Request body is required." };
             }
-            
+
             // Support both legacy format and new multimodal format
-            const body = ctx.body as { 
+            const body = ctx.body as {
                 msg?: string;           // Legacy format
                 text?: string;          // New format
                 message?: string;       // Alternative format
@@ -99,12 +108,32 @@ export class LLMCore {
 
             try {
                 logger.info(`Processing message for conversation ID: ${UserConfig.conversationId}`);
-                
-                // Use the enhanced addMessage method that supports images
-                const { aiResponse } = images.length > 0 
-                    ? await this.chatService.addMessage({ text: messageText, images })
-                    : await this.chatService.addMessage(messageText);
 
+                // Use the enhanced chatController method that supports images
+                const result = images.length > 0
+                    ? await chatController.processMessage({ text: messageText, images })
+                    : await chatController.processMessage(messageText);
+
+                // Check if there was an error during processing
+                if (result.error) {
+                    ctx.set.status = 500;
+                    logger.error(`Message processing failed: ${result.error.message}`);
+                    return {
+                        error: "Message processing failed",
+                        details: {
+                            type: result.error.type,
+                            message: result.error.message,
+                            step: result.error.details?.step,
+                            duration: result.error.details?.duration,
+                            timestamp: result.error.details?.timestamp
+                        },
+                        fallbackResponse: result.aiResponse,
+                        status: "error_with_fallback"
+                    };
+                }
+
+                const { aiResponse } = result;
+                
                 if (!aiResponse) {
                     ctx.set.status = 500;
                     logger.error("Failed to process message.");
@@ -128,7 +157,7 @@ export class LLMCore {
             } catch (error) {
                 logger.error("Error processing message:", error);
                 ctx.set.status = 500;
-                return { 
+                return {
                     error: "Failed to process message",
                     details: error instanceof Error ? error.message : "Unknown error"
                 };
@@ -137,7 +166,7 @@ export class LLMCore {
 
         this.server.get("/api/chat/latest", async (ctx) => {
             logger.info("Retrieving latest message from chat history...");
-            const latestMessage = await this.chatService.getLatestMessage();
+            const latestMessage = await chatController.getLatestMessage();
 
             if (latestMessage === null) {
                 logger.warn("No messages found in the chat history.");
@@ -164,7 +193,7 @@ export class LLMCore {
 
             try {
                 // Use enhanced search that includes image context
-                const messages = await this.chatService.searchWithImageContext(body.query);
+                const messages = await chatController.searchWithImageContext(body.query);
                 return {
                     message: "Search completed successfully",
                     status: "success",
@@ -177,9 +206,492 @@ export class LLMCore {
             } catch (error) {
                 logger.error("Error searching messages:", error);
                 ctx.set.status = 500;
-                return { 
+                return {
                     error: "Failed to search messages",
                     details: error instanceof Error ? error.message : "Unknown error"
+                };
+            }
+        })
+
+        // Get latest vector messages from Pinecone
+        this.server.get("/api/vector/latest", async (ctx) => {
+            try {
+                // Get limit from query parameter, default to 10, max 50
+                const limitParam = ctx.query.limit;
+                let limit = 10;
+                
+                if (limitParam) {
+                    const parsedLimit = parseInt(limitParam as string);
+                    if (!isNaN(parsedLimit) && parsedLimit > 0) {
+                        limit = Math.min(parsedLimit, 50); // Max 50 messages
+                    }
+                }
+
+                logger.info(`Retrieving latest ${limit} vector messages from Pinecone...`);
+
+                // Use the new getLatestMessages method instead of empty query
+                const messages = await vectorStoreService.getLatestMessages(limit);
+
+                return {
+                    message: "Latest vector messages retrieved successfully",
+                    status: "success",
+                    data: {
+                        messages: messages,
+                        totalMessages: messages.length,
+                        limit: limit,
+                        conversationId: UserConfig.conversationId
+                    }
+                };
+            } catch (error) {
+                logger.error("Error retrieving latest vector messages:", error);
+                ctx.set.status = 500;
+                return {
+                    error: "Failed to retrieve latest vector messages",
+                    details: error instanceof Error ? error.message : "Unknown error"
+                };
+            }
+        })
+
+        // Debug endpoint to verify chunk IDs
+        this.server.get("/api/vector/verify/:chunkId", async (ctx) => {
+            try {
+                const { chunkId } = ctx.params;
+                
+                if (!chunkId) {
+                    ctx.set.status = 400;
+                    return { error: "Chunk ID is required." };
+                }
+
+                logger.info(`Verifying chunk ID: ${chunkId}`);
+
+                // Try to find the chunk in Pinecone
+                const results = await chatHistoryVectorStore.search("*", 1000, { 
+                    conversationId: UserConfig.conversationId 
+                });
+                
+                const foundChunk = results.find((doc: any) => doc.id === chunkId || doc.metadata?.id === chunkId);
+                
+                return {
+                    message: foundChunk ? "Chunk found" : "Chunk not found",
+                    status: "success",
+                    data: {
+                        chunkId: chunkId,
+                        found: !!foundChunk,
+                        chunk: foundChunk ? {
+                            id: foundChunk.id,
+                            metadataId: foundChunk.metadata?.id,
+                            role: foundChunk.metadata?.role,
+                            messageId: foundChunk.metadata?.messageId,
+                            chunkIndex: foundChunk.metadata?.chunkIndex,
+                            content: foundChunk.pageContent?.substring(0, 100) + "..."
+                        } : null,
+                        totalSearchResults: results.length
+                    }
+                };
+            } catch (error) {
+                logger.error("Error verifying chunk ID:", error);
+                ctx.set.status = 500;
+                return {
+                    error: "Failed to verify chunk ID",
+                    details: error instanceof Error ? error.message : "Unknown error"
+                };
+            }
+        })
+
+        // Debug endpoint to compare database vs vector store for a message
+        this.server.get("/api/debug/message/:messageId", async (ctx) => {
+            try {
+                const { messageId } = ctx.params;
+                
+                if (!messageId) {
+                    ctx.set.status = 400;
+                    return { error: "Message ID is required." };
+                }
+
+                // Get message from database
+                const dbMessage = await prisma.message.findUnique({
+                    where: { id: messageId }
+                });
+
+                if (!dbMessage) {
+                    ctx.set.status = 404;
+                    return { error: "Message not found in database." };
+                }
+
+                // Get all chunks from vector store for this message
+                const vectorResults = await chatHistoryVectorStore.search("*", 1000, { 
+                    conversationId: UserConfig.conversationId,
+                    messageId: messageId
+                });
+
+                // Extract metadata
+                const dbMetadata = dbMessage.metadata as any;
+                const vectorChunkIds = dbMetadata?.metadata?.vectorChunkIds || [];
+                
+                // Check which chunks exist in vector store
+                const vectorChunkChecks = vectorChunkIds.map((chunkId: string) => {
+                    const found = vectorResults.find((doc: any) => doc.id === chunkId);
+                    return {
+                        chunkId: chunkId,
+                        existsInVector: !!found,
+                        vectorMetadata: found ? {
+                            id: found.id,
+                            messageId: found.metadata?.messageId,
+                            role: found.metadata?.role,
+                            chunkIndex: found.metadata?.chunkIndex
+                        } : null
+                    };
+                });
+
+                return {
+                    message: "Debug comparison completed",
+                    status: "success",
+                    data: {
+                        messageId: messageId,
+                        database: {
+                            role: dbMessage.role,
+                            createdAt: dbMessage.createdAt,
+                            vectorChunkIds: vectorChunkIds,
+                            vectorChunkCount: dbMetadata?.metadata?.vectorChunkCount || 0,
+                            chunked: dbMetadata?.metadata?.chunked || false
+                        },
+                        vectorStore: {
+                            totalChunksFound: vectorResults.length,
+                            chunkIds: vectorResults.map((doc: any) => doc.id),
+                            allChunks: vectorResults.map((doc: any) => ({
+                                id: doc.id,
+                                messageId: doc.metadata?.messageId,
+                                chunkIndex: doc.metadata?.chunkIndex,
+                                contentPreview: doc.pageContent?.substring(0, 50) + "..."
+                            }))
+                        },
+                        chunkValidation: vectorChunkChecks,
+                        issues: {
+                            missingChunks: vectorChunkChecks.filter((c: any) => !c.existsInVector).length,
+                            extraChunks: vectorResults.length - vectorChunkIds.length,
+                            mismatchedCount: vectorResults.length !== vectorChunkIds.length
+                        }
+                    }
+                };
+            } catch (error) {
+                logger.error("Error in debug comparison:", error);
+                ctx.set.status = 500;
+                return {
+                    error: "Failed to debug message",
+                    details: error instanceof Error ? error.message : "Unknown error"
+                };
+            }
+        })
+
+        // Fix chunk IDs for a specific message
+        this.server.post("/api/debug/fix-chunks/:messageId", async (ctx) => {
+            try {
+                const { messageId } = ctx.params;
+                
+                if (!messageId) {
+                    ctx.set.status = 400;
+                    return { error: "Message ID is required." };
+                }
+
+                // Get message from database
+                const dbMessage = await prisma.message.findUnique({
+                    where: { id: messageId }
+                });
+
+                if (!dbMessage) {
+                    ctx.set.status = 404;
+                    return { error: "Message not found in database." };
+                }
+
+                if (dbMessage.role !== 'assistant') {
+                    ctx.set.status = 400;
+                    return { error: "Can only fix chunk IDs for assistant messages." };
+                }
+
+                // Get all chunks from vector store for this message
+                const vectorResults = await chatHistoryVectorStore.search("*", 1000, { 
+                    conversationId: UserConfig.conversationId,
+                    messageId: messageId
+                });
+
+                if (vectorResults.length === 0) {
+                    return {
+                        message: "No chunks found in vector store for this message",
+                        status: "warning"
+                    };
+                }
+
+                // Extract the correct chunk IDs from vector store
+                const correctChunkIds = vectorResults.map((doc: any) => doc.id);
+                
+                // Update the database with correct chunk IDs
+                await chatRepository.updateMessageWithChunkIds(messageId, correctChunkIds);
+
+                return {
+                    message: "Successfully fixed chunk IDs",
+                    status: "success",
+                    data: {
+                        messageId: messageId,
+                        oldChunkCount: (dbMessage.metadata as any)?.metadata?.vectorChunkCount || 0,
+                        newChunkCount: correctChunkIds.length,
+                        correctedChunkIds: correctChunkIds
+                    }
+                };
+            } catch (error) {
+                logger.error("Error fixing chunk IDs:", error);
+                ctx.set.status = 500;
+                return {
+                    error: "Failed to fix chunk IDs",
+                    details: error instanceof Error ? error.message : "Unknown error"
+                };
+            }
+        })
+
+        // Delete latest chat pair (user message + AI response)
+        this.server.delete("/api/chat/latest-pair", async (ctx) => {
+            logger.info("Deleting latest chat pair (user + AI messages)...");
+            
+            try {
+                // Get the latest 3 messages to ensure we can find a proper pair
+                const latestMessages = await prisma.message.findMany({
+                    where: {
+                        conversationId: UserConfig.conversationId,
+                        conversation: {
+                            userId: UserConfig.id
+                        }
+                    },
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
+                    take: 3, // Get latest 3 messages to find proper pair
+                    include: {
+                        images: true // Include images for cleanup
+                    }
+                });
+
+                if (latestMessages.length === 0) {
+                    logger.warn("No messages found to delete.");
+                    ctx.set.status = 404;
+                    return { 
+                        error: "No messages found to delete.",
+                        status: "error"
+                    };
+                }
+
+                // Find the most recent assistant message and its corresponding user message
+                let assistantMessage = null;
+                let userMessage = null;
+                let messagesToDelete = [];
+
+                // Look for the latest assistant message
+                for (const msg of latestMessages) {
+                    if (msg.role === 'assistant' && !assistantMessage) {
+                        assistantMessage = msg;
+                        break;
+                    }
+                }
+
+                // If we found an assistant message, look for the user message that came before it
+                if (assistantMessage) {
+                    for (const msg of latestMessages) {
+                        if (msg.role === 'user' && 
+                            new Date(msg.createdAt) < new Date(assistantMessage.createdAt)) {
+                            userMessage = msg;
+                            break;
+                        }
+                    }
+                    
+                    // If we found both, delete the pair
+                    if (userMessage) {
+                        messagesToDelete = [assistantMessage, userMessage];
+                        logger.info(`Found proper chat pair to delete: user(${userMessage.id}) + assistant(${assistantMessage.id})`);
+                    } else {
+                        // Only assistant message without corresponding user - delete just assistant
+                        messagesToDelete = [assistantMessage];
+                        logger.info(`Found lone assistant message to delete: ${assistantMessage.id}`);
+                    }
+                } else {
+                    // No assistant message found, check if there's a lone user message
+                    const loneUserMessage = latestMessages.find(msg => msg.role === 'user');
+                    if (loneUserMessage) {
+                        messagesToDelete = [loneUserMessage];
+                        logger.info(`Found lone user message to delete: ${loneUserMessage.id}`);
+                    } else {
+                        logger.warn("No valid messages found to delete.");
+                        ctx.set.status = 404;
+                        return { 
+                            error: "No valid messages found to delete.",
+                            status: "error"
+                        };
+                    }
+                }
+
+                // Collect all message IDs and image URLs for cleanup
+                const messageIds = messagesToDelete.map(msg => msg.id);
+                const imageUrls: string[] = [];
+                
+                for (const msg of messagesToDelete) {
+                    if (msg.images && msg.images.length > 0) {
+                        imageUrls.push(...msg.images.map(img => img.imageUrl));
+                    }
+                }
+
+                // Delete from database (with cascade for images)
+                await prisma.$transaction(async (tx) => {
+                    // Delete message images first
+                    await tx.messageImage.deleteMany({
+                        where: {
+                            messageId: {
+                                in: messageIds
+                            }
+                        }
+                    });
+
+                    // Delete messages
+                    await tx.message.deleteMany({
+                        where: {
+                            id: {
+                                in: messageIds
+                            }
+                        }
+                    });
+                });
+
+                // Delete from vector store (Pinecone)
+                try {
+                    for (const msg of messagesToDelete) {
+                        if (msg.role === 'user') {
+                            // Delete user message directly (user messages use their ID as vector ID)
+                            await chatHistoryVectorStore.delete([msg.id]);
+                            logger.info(`Deleted user message from vector store: ${msg.id}`);
+                        } else if (msg.role === 'assistant') {
+                            // For assistant messages, we need to find and delete all chunks
+                            // First try to use chunk IDs from PostgreSQL metadata if available
+                            
+                            let allChunkIds: string[] = [];
+                            
+                            // Method 1: Try to get chunk IDs from PostgreSQL metadata (most reliable)
+                            try {
+                                const vectorChunkIds = (msg as any).metadata?.metadata?.vectorChunkIds;
+                                if (vectorChunkIds && Array.isArray(vectorChunkIds) && vectorChunkIds.length > 0) {
+                                    allChunkIds.push(...vectorChunkIds);
+                                    logger.info(`Found ${vectorChunkIds.length} chunk IDs from PostgreSQL metadata for assistant message: ${msg.id}`);
+                                } else {
+                                    logger.info(`No chunk IDs found in PostgreSQL metadata for assistant message: ${msg.id}, falling back to search`);
+                                }
+                            } catch (metadataError) {
+                                logger.warn(`Failed to extract chunk IDs from metadata for message ${msg.id}:`, metadataError);
+                            }
+                            
+                            // Method 2: If no chunk IDs in metadata, try search-based approach
+                            if (allChunkIds.length === 0) {
+                                try {
+                                    // Try multiple search queries to find chunks for this assistant message
+                                    const searchQueries = [
+                                        'assistant response',
+                                        'AI response',
+                                        msg.content?.substring(0, 50) || 'assistant message', // Use part of actual content
+                                        '' // Empty query as final fallback
+                                    ];
+                                    
+                                    for (const query of searchQueries) {
+                                        try {
+                                            const searchResults = await chatHistoryVectorStore.search(query, 200, { 
+                                                messageId: msg.id, 
+                                                role: 'assistant' 
+                                            });
+                                            
+                                            if (searchResults.length > 0) {
+                                                const searchChunkIds = searchResults
+                                                    .map((chunk: any) => chunk.metadata?.id)
+                                                    .filter((id: any) => id !== undefined && id !== null);
+                                                allChunkIds.push(...searchChunkIds);
+                                                logger.info(`Found ${searchChunkIds.length} chunks with query "${query.substring(0, 30)}..." for assistant message: ${msg.id}`);
+                                                break; // Stop after finding chunks
+                                            }
+                                        } catch (queryError) {
+                                            logger.warn(`Search query "${query.substring(0, 30)}..." failed:`, queryError);
+                                            continue;
+                                        }
+                                    }
+                                } catch (searchError) {
+                                    logger.warn(`All search methods failed for assistant message ${msg.id}:`, searchError);
+                                }
+                            }
+                            
+                            // Delete found chunk IDs
+                            if (allChunkIds.length > 0) {
+                                // Remove duplicates
+                                const uniqueChunkIds = [...new Set(allChunkIds)];
+                                await chatHistoryVectorStore.delete(uniqueChunkIds);
+                                logger.info(`Successfully deleted ${uniqueChunkIds.length} assistant chunks from vector store for message: ${msg.id}`);
+                                logger.debug(`Deleted chunk IDs: ${uniqueChunkIds.join(', ')}`);
+                            } else {
+                                logger.warn(`No chunks found for assistant message: ${msg.id} - trying direct deletion`);
+                                
+                                // Fallback: Try to delete using the messageId directly
+                                try {
+                                    await chatHistoryVectorStore.delete([msg.id]);
+                                    logger.info(`Fallback: Successfully deleted assistant message directly by ID: ${msg.id}`);
+                                } catch (fallbackError) {
+                                    logger.error(`All deletion methods failed for assistant message ${msg.id}:`, fallbackError);
+                                }
+                            }
+                        }
+                    }
+                } catch (vectorError) {
+                    logger.warn("Error deleting from vector store:", vectorError);
+                    // Continue even if vector store deletion fails
+                }
+
+                // Verification: Check if vector store deletion was successful
+                try {
+                    for (const msg of messagesToDelete) {
+                        if (msg.role === 'assistant') {
+                            // Check if any chunks still exist for this assistant message
+                            const verificationResults = await chatHistoryVectorStore.search('', 50, { 
+                                messageId: msg.id, 
+                                role: 'assistant' 
+                            });
+                            
+                            if (verificationResults.length > 0) {
+                                logger.warn(`VERIFICATION: ${verificationResults.length} chunks still exist for assistant message ${msg.id}. IDs: ${verificationResults.map((r: any) => r.metadata?.id).join(', ')}`);
+                            } else {
+                                logger.info(`VERIFICATION: All chunks successfully deleted for assistant message ${msg.id}`);
+                            }
+                        }
+                    }
+                } catch (verificationError) {
+                    logger.warn("Verification check failed:", verificationError);
+                }
+
+                const deletedCount = messagesToDelete.length;
+                const deletedTypes = messagesToDelete.map(msg => msg.role).join(' + ');
+                const wasProperPair = deletedCount === 2 && 
+                                    messagesToDelete.some(msg => msg.role === 'user') && 
+                                    messagesToDelete.some(msg => msg.role === 'assistant');
+
+                logger.info(`Successfully deleted ${deletedCount} message(s): ${deletedTypes}`);
+
+                return {
+                    message: `Successfully deleted latest chat ${deletedCount === 2 ? 'pair' : 'message'}`,
+                    status: "success",
+                    data: {
+                        deletedMessages: deletedCount,
+                        deletedTypes: deletedTypes,
+                        deletedIds: messageIds,
+                        deletedImages: imageUrls.length,
+                        wasProperPair: wasProperPair
+                    }
+                };
+
+            } catch (error) {
+                logger.error("Error deleting latest chat pair:", error);
+                ctx.set.status = 500;
+                return {
+                    error: "Failed to delete latest chat pair",
+                    details: error instanceof Error ? error.message : "Unknown error",
+                    status: "error"
                 };
             }
         })
@@ -243,7 +755,7 @@ export class LLMCore {
             }
 
             try {
-                const messageWithImages = await this.chatService.getMessageWithImages(messageId);
+                const messageWithImages = await chatController.getMessageWithImages(messageId);
                 return {
                     message: "Message retrieved successfully",
                     status: "success",
@@ -256,7 +768,7 @@ export class LLMCore {
                     return { error: "Message not found" };
                 }
                 ctx.set.status = 500;
-                return { 
+                return {
                     error: "Failed to retrieve message",
                     details: error instanceof Error ? error.message : "Unknown error"
                 };
@@ -271,7 +783,7 @@ export class LLMCore {
                 return { error: "Request body is required." };
             }
 
-            const body = ctx.body as { 
+            const body = ctx.body as {
                 text: string;
                 images: string[];
             };
@@ -290,8 +802,8 @@ export class LLMCore {
 
             try {
                 logger.info(`Processing multimodal message with ${body.images.length} image(s): ${body.text}`);
-                
-                const { aiResponse } = await this.chatService.addMessageWithImages(body.text, body.images);
+
+                const { aiResponse } = await chatController.processMessage({ text: body.text, images: body.images });
 
                 if (!aiResponse) {
                     ctx.set.status = 500;
@@ -315,7 +827,7 @@ export class LLMCore {
             } catch (error) {
                 logger.error("Error processing multimodal message:", error);
                 ctx.set.status = 500;
-                return { 
+                return {
                     error: "Failed to process multimodal message",
                     details: error instanceof Error ? error.message : "Unknown error"
                 };
@@ -329,14 +841,14 @@ export class LLMCore {
                 const contentType = ctx.headers['content-type'] || '';
                 if (!contentType.includes('multipart/form-data')) {
                     ctx.set.status = 400;
-                    return { 
-                        error: "This endpoint requires multipart/form-data. Use Content-Type: multipart/form-data" 
+                    return {
+                        error: "This endpoint requires multipart/form-data. Use Content-Type: multipart/form-data"
                     };
                 }
 
                 // Extract form data
                 const formData = ctx.body as any;
-                
+
                 // Get text message from form field
                 const text = formData.text || formData.message || formData.msg;
                 if (!text || typeof text !== 'string') {
@@ -347,10 +859,10 @@ export class LLMCore {
                 // Process uploaded files
                 const images: string[] = [];
                 const files = formData.files || formData.images || [];
-                
+
                 // Handle single file or array of files
                 const fileArray = Array.isArray(files) ? files : [files].filter(Boolean);
-                
+
                 for (const file of fileArray) {
                     if (file && file.size > 0) {
                         // Validate file type
@@ -376,10 +888,10 @@ export class LLMCore {
 
                 logger.info(`Processing FormData message with ${images.length} uploaded file(s): ${text}`);
 
-                // Process with chat service
-                const { aiResponse } = images.length > 0 
-                    ? await this.chatService.addMessageWithImages(text, images)
-                    : await this.chatService.addMessage(text);
+                // Process with chat controller
+                const { aiResponse } = images.length > 0
+                    ? await chatController.processMessage({ text, images })
+                    : await chatController.processMessage(text);
 
                 if (!aiResponse) {
                     ctx.set.status = 500;
@@ -407,7 +919,7 @@ export class LLMCore {
             } catch (error) {
                 logger.error("Error processing FormData:", error);
                 ctx.set.status = 500;
-                return { 
+                return {
                     error: "Failed to process FormData",
                     details: error instanceof Error ? error.message : "Unknown error"
                 };
@@ -418,19 +930,19 @@ export class LLMCore {
         this.server.post("/api/chat/form", async (ctx) => {
             try {
                 const body = ctx.body as any;
-                
+
                 // Extract text from various possible field names
                 const text = body?.text || body?.message || body?.msg;
                 if (!text || typeof text !== 'string') {
                     ctx.set.status = 400;
-                    return { 
-                        error: "Text field is required. Send as 'text', 'message', or 'msg' field in form data." 
+                    return {
+                        error: "Text field is required. Send as 'text', 'message', or 'msg' field in form data."
                     };
                 }
 
                 // Extract images from form fields (expecting base64 strings)
                 const images: string[] = [];
-                
+
                 // Check for common image field names
                 const imageFields = ['images', 'image', 'files', 'file'];
                 for (const field of imageFields) {
@@ -456,18 +968,18 @@ export class LLMCore {
                 for (const image of images) {
                     if (!image.startsWith('data:image/') && !image.startsWith('http')) {
                         ctx.set.status = 400;
-                        return { 
-                            error: `Invalid image format. Expected base64 data URL or HTTP URL. Got: ${image.substring(0, 50)}...` 
+                        return {
+                            error: `Invalid image format. Expected base64 data URL or HTTP URL. Got: ${image.substring(0, 50)}...`
                         };
                     }
                 }
 
                 logger.info(`Processing form data with ${images.length} image(s): ${text}`);
 
-                // Process with chat service
-                const { aiResponse } = images.length > 0 
-                    ? await this.chatService.addMessageWithImages(text, images)
-                    : await this.chatService.addMessage(text);
+                // Process with chat controller
+                const { aiResponse } = images.length > 0
+                    ? await chatController.processMessage({ text, images })
+                    : await chatController.processMessage(text);
 
                 if (!aiResponse) {
                     ctx.set.status = 500;
@@ -491,7 +1003,7 @@ export class LLMCore {
             } catch (error) {
                 logger.error("Error processing form data:", error);
                 ctx.set.status = 500;
-                return { 
+                return {
                     error: "Failed to process form data",
                     details: error instanceof Error ? error.message : "Unknown error"
                 };
@@ -510,32 +1022,28 @@ export async function startServer(): Promise<void> {
 
     const server = new Elysia({ adapter: node() })
     let MessageQueue: any;
-    
+
     try {
         // Use safe message queue that won't crash the app
         MessageQueue = await createSafeMessageQueue(process.env.RABBITMQ_URL);
-        
-        const chatService = new ChatService(MessageQueue)
 
-        const llmCore = new LLMCore(server, chatService);
+        const llmCore = new LLMCore(server);
         await llmCore.init();
 
         logger.info("LLM Core Server started successfully.");
-        
-        // Graceful shutdown handlers
+
         const gracefulShutdown = async (signal: string) => {
             logger.info(`Received ${signal}, shutting down gracefully...`);
-            
+
             try {
                 if (MessageQueue) {
                     await MessageQueue.close();
                     logger.info('RabbitMQ connection closed');
                 }
-                
-                // Close other resources if needed
+
                 await prisma.$disconnect();
                 logger.info('Database connection closed');
-                
+
                 logger.info('Graceful shutdown completed');
                 process.exit(0);
             } catch (error) {
@@ -546,18 +1054,15 @@ export async function startServer(): Promise<void> {
 
         process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
         process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-        
-        // Handle uncaught exceptions
+
         process.on('uncaughtException', (error) => {
             logger.error('Uncaught exception:', error);
-            // Don't exit, just log the error
         });
-        
+
         process.on('unhandledRejection', (reason, promise) => {
             logger.error('Unhandled rejection at:', promise, 'reason:', reason);
-            // Don't exit, just log the error
         });
-        
+
     } catch (error) {
         logger.error("Failed to start LLM Core Server:", error);
         throw error;

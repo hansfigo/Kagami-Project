@@ -1,0 +1,9 @@
+services:
+  telegram_bot: 
+    image: hansfigo/kagami-telegram-bot:latest
+    restart: always
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - public_html/.env
+      

@@ -1,0 +1,17 @@
+features:
+  - docker
+services:
+  api :
+    image: hansfigo/kagami-api:latest
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./api/.env
+    ports:
+      - 3000:3000
+  telegram-bot:
+    image: hansfigo/kagami-telegram-bot:latest
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./telegram-bot/.env

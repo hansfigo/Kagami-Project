@@ -224,7 +224,6 @@ export async function createRabbitMQClient(rabbitMQUrl: string): Promise<RabbitM
         return client;
     } catch (error) {
         logger.error('Failed to create RabbitMQ client:', error);
-        // Return client anyway so app can start, it will handle reconnection
         return client;
     }
 }
@@ -236,12 +235,10 @@ export async function createMessageQueue(rabbitMQClient: IRabbitMQClient): Promi
         return queue;
     } catch (error) {
         logger.error('Failed to initialize message queue:', error);
-        // Return queue anyway so app can start, it will handle reconnection
         return queue;
     }
 }
 
-// Fallback message queue that just logs when RabbitMQ is not available
 export class NoOpMessageQueue implements IMessageQueue {
     public async init(): Promise<void> {
         logger.warn('Using NoOp message queue - RabbitMQ functionality disabled');
@@ -256,11 +253,10 @@ export class NoOpMessageQueue implements IMessageQueue {
     }
 
     public isHealthy(): boolean {
-        return false; // Always false for NoOp
+        return false; 
     }
 }
 
-// Create a safe message queue that won't crash the app
 export async function createSafeMessageQueue(rabbitMQUrl?: string): Promise<IMessageQueue> {
     if (!rabbitMQUrl) {
         logger.warn('No RabbitMQ URL provided, using NoOp message queue');
@@ -271,7 +267,6 @@ export async function createSafeMessageQueue(rabbitMQUrl?: string): Promise<IMes
         const client = await createRabbitMQClient(rabbitMQUrl);
         const queue = await createMessageQueue(client);
         
-        // Test if it's actually working
         if (queue.isHealthy()) {
             logger.info('RabbitMQ message queue created successfully');
             return queue;

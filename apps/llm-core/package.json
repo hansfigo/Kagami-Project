@@ -46,6 +46,7 @@
     "@langchain/openai": "^0.5.15",
     "@langchain/pinecone": "^0.2.0",
     "@langchain/textsplitters": "^0.1.0",
+    "@langchain/xai": "^0.0.3",
     "@pinecone-database/pinecone": "^6.1.1",
     "@prisma/client": "^6.10.1",
     "@swc-node/register": "^1.10.10",
