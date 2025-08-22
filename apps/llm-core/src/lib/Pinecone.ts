@@ -33,12 +33,6 @@ class LangchainPineconeStore {
     }
 
     public async search(query: string, topK: number = 8, filter?: Partial<PineconeChunkMetadata>): Promise<any> {
-        logger.info('🔍 Pinecone Search Debug:', {
-            query: query.substring(0, 100),
-            topK,
-            filter,
-            namespace: this.pc.namespace
-        });
 
         // Handle legacy typo: search both 'conversationId' and 'coversationId'
         if (filter?.conversationId) {
@@ -51,27 +45,20 @@ class LangchainPineconeStore {
                 filter
             );
 
-            logger.info('🔍 First search (correct spelling) results:', results.length);
 
-            // If no results, try with legacy typo
             if (results.length === 0) {
                 const legacyFilter = { ...filter };
                 delete legacyFilter.conversationId;
                 (legacyFilter as any).coversationId = conversationId;
 
-                logger.info('🔍 Trying legacy search with typo filter:', legacyFilter);
-                
                 const legacyResults = await this.pc.similaritySearch(
                     query,
                     topK,
                     legacyFilter
                 );
-
-                logger.info('🔍 Legacy search (typo) results:', legacyResults.length);
                 results = legacyResults;
             }
 
-            // If still no results or we want comprehensive results, search both and merge
             if (results.length < topK) {
                 const legacyFilter = { ...filter };
                 delete legacyFilter.conversationId;
@@ -79,11 +66,10 @@ class LangchainPineconeStore {
 
                 const legacyResults = await this.pc.similaritySearch(
                     query,
-                    Math.max(topK - results.length, 5), // Get remaining or at least 5
+                    Math.max(topK - results.length, 5),
                     legacyFilter
                 );
 
-                // Merge results and remove duplicates by ID
                 const mergedResults = [...results];
                 legacyResults.forEach(legacyResult => {
                     const isDuplicate = mergedResults.some(existing => 
@@ -94,14 +80,10 @@ class LangchainPineconeStore {
                     }
                 });
 
-                results = mergedResults.slice(0, topK); // Limit to topK
-                logger.info('🔍 Merged results (correct + legacy):', results.length);
+                results = mergedResults.slice(0, topK);
             }
 
-            logger.info('🔍 Pinecone Search Final Results:', {
-                count: results.length,
-                sampleMetadata: results.length > 0 ? results[0].metadata : 'No results'
-            });
+
 
             return results;
         }
@@ -112,11 +94,6 @@ class LangchainPineconeStore {
             topK,
             filter
         );
-
-        logger.info('🔍 Pinecone Search Results:', {
-            count: results.length,
-            sampleMetadata: results.length > 0 ? results[0].metadata : 'No results'
-        });
 
         return results;
     }
@@ -143,7 +120,32 @@ class LangchainPineconeStore {
     }
 
     public async addDocuments(docs: Document[]): Promise<void> {
-        await this.pc.addDocuments(docs);
+        logger.info(`📤 Pinecone: Attempting to add ${docs.length} documents...`);
+        
+        // Extract IDs from metadata for proper Pinecone storage
+        const ids: string[] = [];
+        const docsWithoutId: Document[] = [];
+        
+        docs.forEach((doc, index) => {
+            // Use metadata.id as the document ID for Pinecone
+            const docId = doc.metadata?.id || doc.id || `doc-${Date.now()}-${index}`;
+            ids.push(docId);
+            
+            // Create document without the id property (LangChain Pinecone doesn't use doc.id)
+            const docWithoutId = new Document({
+                pageContent: doc.pageContent,
+                metadata: {
+                    ...doc.metadata,
+                    id: docId // Ensure ID is in metadata
+                }
+            });
+            
+            docsWithoutId.push(docWithoutId);
+        });
+        
+        // Use the correct LangChain Pinecone pattern with separate ids parameter
+        await this.pc.addDocuments(docsWithoutId, { ids });
+        logger.info(`✅ Pinecone: Successfully added ${docs.length} documents with IDs: ${ids.join(', ')}`);
     }
 }
 

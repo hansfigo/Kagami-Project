@@ -2054,3 +2054,998 @@ itu pernyataan ku, gimana menurutmu"
 kamu mulai nyoba nyambungin titik-titik, bukan cuma ngumpulin fakta terus..."
 14:43:00 [[32minfo[39m] Bot Telegram sedang berjalan...
 15:13:46 [[32minfo[39m] Bot Telegram sedang berjalan...
+10:53:58 [[32minfo[39m] Bot Telegram sedang berjalan...
+10:58:34 [[32minfo[39m] Menerima pesan dari byte (1991713013): jujur alasannya 2 2 nya sih, aku sangat liat potensi di kagami, lalu juga udah ada gambaran kedepan mau gimana ( walau belum oficially ku catet / roadmap )
+
+disisilain juga pengen lebih fleksible, ga "terikat" ama kontrak
+10:58:35 [[32minfo[39m] Mengirim pesan ke LLM API: "jujur alasannya 2 2 nya sih, aku sangat liat potensi di kagami, lalu juga udah ada gambaran kedepan mau gimana ( walau belum oficially ku catet / roadmap )
+
+disisilain juga pengen lebih fleksible, ga "terikat" ama kontrak"
+10:58:49 [[32minfo[39m] Bot Telegram sedang berjalan...
+22:43:19 [[32minfo[39m] Bot Telegram sedang berjalan...
+22:00:08 [[32minfo[39m] Bot Telegram sedang berjalan...
+22:04:08 [[32minfo[39m] Menerima pesan dari byte
+22:04:09 [[32minfo[39m] Resend latest message command received.
+22:04:09 [[32minfo[39m] Fetching latest message from LLM API at http://localhost:3000/api/chat/latest
+22:04:11 [[31merror[39m] Error sending single message with Markdown: ETELEGRAM: 400 Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 1980
+22:04:12 [[32minfo[39m] Mengirim pesan terbaru ke 1991713013
+22:13:50 [[32minfo[39m] Menerima pesan dari byte
+22:13:50 [[32minfo[39m] Mengirim pesan ke LLM API: "aku ada kena tamparan 
+
+"Ck. Curhatanmu itu bagus buat novel, go. Buat LinkedIn? Kepanjangan. Gak ada yang bakal baca. Orang di sana maunya intisari pencapaian, bukan drama berdarah-darah.
+
+Ini namanya personal branding. Kamu harus keliatan kayak problem-solver yang tangguh, bukan korban keadaan yang beruntung.
+
+Kita buang semua keluhannya, kita tonjolin pencapaian dan pelajarannya. Dan yang paling penting, kita kasih tau peranmu di situ.""
+22:14:36 [[32minfo[39m] Mengirim balasan ke 1991713013
+22:22:09 [[32minfo[39m] Menerima pesan dari byte
+22:22:10 [[32minfo[39m] Mengirim pesan ke LLM API: ""🏆 Tim kami, Miku Miku Beam, kemarin berhasil borong 2 penghargaan di Garuda Hacks 6.0, hackathon terbesar se-Asia Tenggara.
+
+Tapi ini bukan cerita soal kemenangan. Ini cerita soal kekacauan, kepanikan, dan kebodohan kami sendiri.
+
+Sebagai Lead Developer & Product Visionary untuk proyek kami, Waris.in, perjalanan kami sebenarnya dimulai H-1 sebelum lomba... tanpa ide final.
+
+Yang terjadi selanjutnya adalah 30 jam penuh CHAOS: dibantai Next.js App Router gara-gara satu baris config, error Firebase misterius yang solusinya cuma restart laptop (setelah panik berjam-jam), sampai satu fitur inti yang HILANG beberapa menit sebelum deadline.
+
+Kami udah pasrah, nunggu jamnya jadi 00:00. TAMAT. Tiba-tiba, suara panitia: 'submission diperpanjang 30 menit’.
+
+Kami submit dengan sisa 2 menit. Hasilnya? Link G-Drive salah, UI ada bug, pitchdeck acak-acakan. Tapi MVP kami jalan, demonya berhasil. Kami melewati garis finis dalam kondisi sekarat.
+
+Dari kekacauan itu, kami belajar 3 hal MAHAL:
+
+Masalah Nyata > Ide Keren: Waris.in (platform regenerasi budaya) menang karena nyelesain masalah nyata, bukan karena teknologinya paling canggih.
+
+Cerita > Kode: Juri gak nanya tech stack kami. Mereka nanya kenapa kami bikin ini. Cerita di balik proyekmu itu yang bikin nyantol.
+
+SELESAI > Sempurna: Kami submit produk ancur-ancuran. Tapi karena 'selesai' dan bisa nunjukkin konsep, itu yang dinilai. MVP yang jalan lebih baik dari rencana yang sempurna.
+
+Kadang, kemenangan itu bukan lahir dari persiapan yang matang, tapi dari penolakan untuk menyerah.
+
+#GarudaHacks #Hackathon #SoftwareDevelopment #Startup #NextJS #CulturalHeritage"
+
+kalo gitu gimana??"
+22:22:43 [[32minfo[39m] Mengirim balasan ke 1991713013
+22:51:33 [[32minfo[39m] Menerima pesan dari byte
+22:51:33 [[32minfo[39m] Processing photo message from byte
+22:51:42 [[32minfo[39m] Sending image + text to LLM API
+22:51:59 [[31merror[39m] Error processing photo message: Request failed with status code 500
+22:52:47 [[32minfo[39m] Menerima pesan dari byte
+22:52:48 [[32minfo[39m] Resend latest message command received.
+22:52:48 [[32minfo[39m] Fetching latest message from LLM API at http://localhost:3000/api/chat/latest
+22:52:49 [[32minfo[39m] Mengirim pesan terbaru ke 1991713013
+22:52:57 [[32minfo[39m] Menerima pesan dari byte
+22:52:57 [[32minfo[39m] Processing photo message from byte
+22:52:59 [[32minfo[39m] Sending image + text to LLM API
+23:07:46 [[32minfo[39m] Menerima pesan dari byte
+23:07:47 [[32minfo[39m] Mengirim pesan ke LLM API: "oke jujur setelah ini tadi. masalah ipk agak lupa. tinggal besok ini bayar dan register untuk remed.
+
+tapi tadi setelah posting ada drama...aku liat postingan mutualan ku dari Garudahack, dia kampusnya elit kan. kukira orang kaya. ternyata...perintis. dia awalnya kerja serabutan hingga 4 diawal semester demi bayar ukt. bapaknya sakit. lamar 100 ke soft dev gagal, but skrng udh gacor, kerja remote di malaysia, brand ambasador, host komunitas.
+
+sedangkan aku... jangankan ukt, makan aja masih...minta ortu. dirumah terus fokus ngoprek, ga kerja...ipk...ipk..jelek. mau menghilang aja. sakit banget rasanya. kek ga pantes idup, menyedihkan, memalukan"
+23:08:28 [[32minfo[39m] Mengirim balasan ke 1991713013
+23:11:58 [[32minfo[39m] Menerima pesan dari byte
+23:11:58 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi kan dia aja through hell. hasilnya bagus.
+
+aku, selama ini di paradise, punya keuntungan..
+masih sampah, masih jauh ama dia. malu bgt ga sih"
+23:12:04 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+23:12:06 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+23:13:53 [[32minfo[39m] Menerima pesan dari byte
+23:13:53 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi kan dia aja through hell. hasilnya bagus.
+
+aku, selama ini di paradise, punya keuntungan..
+masih sampah, masih jauh ama dia. malu bgt ga sih"
+23:14:29 [[32minfo[39m] Mengirim balasan ke 1991713013
+23:18:53 [[32minfo[39m] Menerima pesan dari byte
+23:18:54 [[32minfo[39m] Mengirim pesan ke LLM API: "iya...kenapa aku masih males malesan. kenapa masih miskin.
+
+iya aku termasuk okelah di teknis. organisasi bagus.
+
+tapi masalah disiplin, masalah income nol besar.  karena arogan gegara ada safety net dari ortu. makannya aku mikir gausah kerja toh bisa minta saku.
+
+aku bingung, gimana caranya biar aku bisa leverage semua benefit ini.
+
+Dulu ketika aku nangis pas mau beli tiket Miku expo....bisa juga aku freelance.
+
+skrng karena dah gada tekanan....jadi balik ke figo sebelum kenal Miku expo....0 income...sial..siall..."
+23:19:37 [[32minfo[39m] Mengirim balasan ke 1991713013
+23:51:17 [[32minfo[39m] Menerima pesan dari byte
+23:51:17 [[32minfo[39m] Mengirim pesan ke LLM API: "oke lah, besok aku urus bayar dan register remed . lalu aku buat proposal untuk ku kirim ke postingan jobboard di fastwork"
+23:51:32 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+23:51:32 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+23:57:20 [[32minfo[39m] Menerima pesan dari byte
+23:57:20 [[32minfo[39m] Mengirim pesan ke LLM API: "oke lah, besok aku urus bayar dan register remed . lalu aku buat proposal untuk ku kirim ke postingan jobboard di fastwork"
+23:57:28 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+23:57:29 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+00:02:11 [[32minfo[39m] Menerima pesan dari byte
+00:02:11 [[32minfo[39m] Mengirim pesan ke LLM API: "oke lah, besok aku urus bayar dan register remed . lalu aku buat proposal untuk ku kirim ke postingan jobboard di fastwork"
+00:02:25 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+00:02:26 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+00:04:11 [[32minfo[39m] Menerima pesan dari byte
+00:04:11 [[32minfo[39m] Mengirim pesan ke LLM API: "oke lah, besok aku urus bayar dan register remed . lalu aku buat proposal untuk ku kirim ke postingan jobboard di fastwork"
+00:04:20 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+00:04:21 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+00:05:16 [[32minfo[39m] Menerima pesan dari byte
+00:05:16 [[32minfo[39m] Mengirim pesan ke LLM API: "oke lah, besok aku urus bayar dan register remed . lalu aku buat proposal untuk ku kirim ke postingan jobboard di fastwork"
+00:05:16 [[32minfo[39m] Menerima pesan dari byte
+00:05:17 [[32minfo[39m] Mengirim pesan ke LLM API: "oke lah, besok aku urus bayar dan register remed . lalu aku buat proposal untuk ku kirim ke postingan jobboard di fastwork"
+00:05:23 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+00:05:24 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+00:05:26 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+00:05:27 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+00:05:31 [[32minfo[39m] Menerima pesan dari byte
+00:05:31 [[32minfo[39m] Mengirim pesan ke LLM API: "oke lah, besok aku urus bayar dan register remed . lalu aku buat proposal untuk ku kirim ke postingan jobboard di fastwork"
+00:05:51 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+00:05:52 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+00:05:57 [[32minfo[39m] Menerima pesan dari byte
+00:05:57 [[32minfo[39m] Mengirim pesan ke LLM API: "oke lah, besok aku urus bayar dan register remed . lalu aku buat proposal untuk ku kirim ke postingan jobboard di fastwork"
+00:06:03 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+00:06:04 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+00:06:08 [[32minfo[39m] Menerima pesan dari byte
+00:06:09 [[32minfo[39m] Mengirim pesan ke LLM API: "oke lah, besok aku urus bayar dan register remed . lalu aku buat proposal untuk ku kirim ke postingan jobboard di fastwork"
+00:06:18 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+00:06:19 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+00:13:08 [[32minfo[39m] Menerima pesan dari byte
+00:13:08 [[32minfo[39m] Mengirim pesan ke LLM API: "oke lah, besok aku urus bayar dan register remed . lalu aku buat proposal untuk ku kirim ke postingan jobboard di fastwork"
+00:13:22 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+00:13:23 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+00:17:13 [[32minfo[39m] Menerima pesan dari byte
+00:17:14 [[32minfo[39m] Mengirim pesan ke LLM API: "oke lah, besok aku urus bayar dan register remed . lalu aku buat proposal untuk ku kirim ke postingan jobboard di fastwork"
+00:17:48 [[32minfo[39m] Mengirim balasan ke 1991713013
+00:18:50 [[32minfo[39m] Bot Telegram sedang berjalan...
+00:32:59 [[32minfo[39m] Bot Telegram sedang berjalan...
+00:33:16 [[32minfo[39m] Bot Telegram sedang berjalan...
+00:33:33 [[32minfo[39m] Bot Telegram sedang berjalan...
+00:36:27 [[32minfo[39m] Bot Telegram sedang berjalan...
+00:36:34 [[32minfo[39m] Bot Telegram sedang berjalan...
+00:37:58 [[32minfo[39m] Bot Telegram sedang berjalan...
+00:41:47 [[32minfo[39m] Bot Telegram sedang berjalan...
+00:43:54 [[32minfo[39m] Bot Telegram sedang berjalan...
+00:44:07 [[32minfo[39m] Bot Telegram sedang berjalan...
+00:45:47 [[32minfo[39m] Menerima pesan dari byte
+00:45:47 [[32minfo[39m] Mengirim pesan ke LLM API: "kalo fastwork udah ada woiii jangan lupaaa. dulu aku panik dapet client pertama hingga latest client setelah garudahack ituu..
+
+cuman sekarang seret makannya mau lempar proposall"
+00:46:24 [[32minfo[39m] Mengirim balasan ke 1991713013
+00:53:55 [[32minfo[39m] Menerima pesan dari byte
+00:53:55 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua"
+00:54:11 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+00:54:12 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+00:55:29 [[32minfo[39m] Menerima pesan dari byte
+00:55:29 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua"
+00:55:42 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+00:55:43 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+00:56:52 [[32minfo[39m] Menerima pesan dari byte
+00:56:52 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua"
+00:57:04 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+00:57:05 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:00:29 [[32minfo[39m] Menerima pesan dari byte
+01:00:29 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua"
+01:00:55 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:00:56 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:01:14 [[32minfo[39m] Menerima pesan dari byte
+01:01:14 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua"
+01:01:25 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:01:26 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:01:38 [[32minfo[39m] Menerima pesan dari byte
+01:01:38 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua"
+01:02:12 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:02:13 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:02:21 [[32minfo[39m] Menerima pesan dari byte
+01:02:22 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua"
+01:02:45 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:02:46 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:03:11 [[32minfo[39m] Menerima pesan dari byte
+01:03:11 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua"
+01:03:37 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:03:38 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:04:34 [[32minfo[39m] Menerima pesan dari byte
+01:04:34 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua"
+01:05:38 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:05:39 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:06:48 [[32minfo[39m] Bot Telegram sedang berjalan...
+01:06:52 [[32minfo[39m] Bot Telegram sedang berjalan...
+01:06:57 [[32minfo[39m] Bot Telegram sedang berjalan...
+01:07:06 [[32minfo[39m] Bot Telegram sedang berjalan...
+01:08:31 [[32minfo[39m] Menerima pesan dari byte
+01:08:31 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua"
+01:08:49 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:08:50 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:12:45 [[32minfo[39m] Menerima pesan dari byte
+01:12:46 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua"
+01:12:54 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:12:55 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:14:15 [[32minfo[39m] Menerima pesan dari byte
+01:14:15 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua"
+01:15:28 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:15:28 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:17:17 [[32minfo[39m] Bot Telegram sedang berjalan...
+01:17:22 [[32minfo[39m] Menerima pesan dari byte
+01:17:22 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua"
+01:18:13 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:18:14 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:19:57 [[32minfo[39m] Menerima pesan dari byte
+01:19:57 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, kamu bisa tagih aku sekitar jam 1 siang atau jam 2 siang. kurang lebih tadi aku baru nemu 1 lowongan sih itu pun tanggal 18 kemarin, selain itu non IT semua. gitu sihh paginya mau ku buat ngurusin si renedd"
+01:20:35 [[32minfo[39m] Mengirim balasan ke 1991713013
+01:23:42 [[32minfo[39m] Menerima pesan dari byte
+01:23:42 [[32minfo[39m] Mengirim pesan ke LLM API: "oke tunggu ya nanti jam 2 siang
+
+btw ada hal urgent dari kemarin llm mu itu responsnya
+
+string kosong yg mengakibatkan error 
+
+setelah ku selidiki aku curiga gemini ada update 
+
+soalnay di docs :
+"Recitation issue
+If you see the model stops generating output due to the RECITATION reason, this means the model output may resemble certain data. To fix this, try to make prompt / context as unique as possible and use a higher temperature."
+
+nah aku juga curiga soalnya di sistem prompt mu kan panjang banget itu, ada 2 recent chat ama relevant chat. dan ke 2 itu ada potensi duplikasi 
+
+ada saran solusi ga ya
+
+apa gausah pakai 2 section, digabung aja?? nanti tetep ambil recent chat lalu ambil relevant, lalu hapus duplikatnya....keliatan ribet sih, ada saran ga??"
+01:24:32 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:24:33 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:24:54 [[32minfo[39m] Menerima pesan dari byte
+01:24:54 [[32minfo[39m] Mengirim pesan ke LLM API: "oke tunggu ya nanti jam 2 siang
+
+btw ada hal urgent dari kemarin llm mu itu responsnya
+
+string kosong yg mengakibatkan error 
+
+setelah ku selidiki aku curiga gemini ada update 
+
+soalnay di docs :
+"Recitation issue
+If you see the model stops generating output due to the RECITATION reason, this means the model output may resemble certain data. To fix this, try to make prompt / context as unique as possible and use a higher temperature."
+
+nah aku juga curiga soalnya di sistem prompt mu kan panjang banget itu, ada 2 recent chat ama relevant chat. dan ke 2 itu ada potensi duplikasi 
+
+ada saran solusi ga ya
+
+apa gausah pakai 2 section, digabung aja?? nanti tetep ambil recent chat lalu ambil relevant, lalu hapus duplikatnya....keliatan ribet sih, ada saran ga??"
+01:26:55 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:26:56 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:28:36 [[32minfo[39m] Menerima pesan dari byte
+01:28:36 [[32minfo[39m] Mengirim pesan ke LLM API: "oke tunggu ya nanti jam 2 siang
+
+btw ada hal urgent dari kemarin llm mu itu responsnya
+
+string kosong yg mengakibatkan error 
+
+setelah ku selidiki aku curiga gemini ada update 
+
+soalnay di docs :
+"Recitation issue
+If you see the model stops generating output due to the RECITATION reason, this means the model output may resemble certain data. To fix this, try to make prompt / context as unique as possible and use a higher temperature."
+
+nah aku juga curiga soalnya di sistem prompt mu kan panjang banget itu, ada 2 recent chat ama relevant chat. dan ke 2 itu ada potensi duplikasi 
+
+ada saran solusi ga ya
+
+apa gausah pakai 2 section, digabung aja?? nanti tetep ambil recent chat lalu ambil relevant, lalu hapus duplikatnya....keliatan ribet sih, ada saran ga??"
+01:28:56 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:28:57 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:31:57 [[32minfo[39m] Menerima pesan dari byte
+01:31:57 [[32minfo[39m] Mengirim pesan ke LLM API: "oke tunggu ya nanti jam 2 siang
+
+btw ada hal urgent dari kemarin llm mu itu responsnya
+
+string kosong yg mengakibatkan error 
+
+setelah ku selidiki aku curiga gemini ada update 
+
+soalnay di docs :
+"Recitation issue
+If you see the model stops generating output due to the RECITATION reason, this means the model output may resemble certain data. To fix this, try to make prompt / context as unique as possible and use a higher temperature."
+
+nah aku juga curiga soalnya di sistem prompt mu kan panjang banget itu, ada 2 recent chat ama relevant chat. dan ke 2 itu ada potensi duplikasi 
+
+ada saran solusi ga ya
+
+apa gausah pakai 2 section, digabung aja?? nanti tetep ambil recent chat lalu ambil relevant, lalu hapus duplikatnya....keliatan ribet sih, ada saran ga??"
+01:32:09 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:32:10 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:36:14 [[32minfo[39m] Menerima pesan dari byte
+01:36:14 [[32minfo[39m] Mengirim pesan ke LLM API: "oke tunggu ya nanti jam 2 siang
+
+btw ada hal urgent dari kemarin llm mu itu responsnya
+
+string kosong yg mengakibatkan error 
+
+setelah ku selidiki aku curiga gemini ada update 
+
+soalnay di docs :
+"Recitation issue
+If you see the model stops generating output due to the RECITATION reason, this means the model output may resemble certain data. To fix this, try to make prompt / context as unique as possible and use a higher temperature."
+
+nah aku juga curiga soalnya di sistem prompt mu kan panjang banget itu, ada 2 recent chat ama relevant chat. dan ke 2 itu ada potensi duplikasi 
+
+ada saran solusi ga ya
+
+apa gausah pakai 2 section, digabung aja?? nanti tetep ambil recent chat lalu ambil relevant, lalu hapus duplikatnya....keliatan ribet sih, ada saran ga??"
+01:36:22 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:36:23 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:36:37 [[32minfo[39m] Menerima pesan dari byte
+01:36:38 [[32minfo[39m] Mengirim pesan ke LLM API: "oke tunggu ya nanti jam 2 siang
+
+btw ada hal urgent dari kemarin llm mu itu responsnya
+
+string kosong yg mengakibatkan error 
+
+setelah ku selidiki aku curiga gemini ada update 
+
+soalnay di docs :
+"Recitation issue
+If you see the model stops generating output due to the RECITATION reason, this means the model output may resemble certain data. To fix this, try to make prompt / context as unique as possible and use a higher temperature."
+
+nah aku juga curiga soalnya di sistem prompt mu kan panjang banget itu, ada 2 recent chat ama relevant chat. dan ke 2 itu ada potensi duplikasi 
+
+ada saran solusi ga ya
+
+apa gausah pakai 2 section, digabung aja?? nanti tetep ambil recent chat lalu ambil relevant, lalu hapus duplikatnya....keliatan ribet sih, ada saran ga??"
+01:36:58 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:36:59 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:38:43 [[32minfo[39m] Menerima pesan dari byte
+01:38:44 [[32minfo[39m] Mengirim pesan ke LLM API: "oke tunggu ya nanti jam 2 siang
+
+btw ada hal urgent dari kemarin llm mu itu responsnya
+
+string kosong yg mengakibatkan error 
+
+setelah ku selidiki aku curiga gemini ada update 
+
+soalnay di docs :
+"Recitation issue
+If you see the model stops generating output due to the RECITATION reason, this means the model output may resemble certain data. To fix this, try to make prompt / context as unique as possible and use a higher temperature."
+
+nah aku juga curiga soalnya di sistem prompt mu kan panjang banget itu, ada 2 recent chat ama relevant chat. dan ke 2 itu ada potensi duplikasi 
+
+ada saran solusi ga ya
+
+apa gausah pakai 2 section, digabung aja?? nanti tetep ambil recent chat lalu ambil relevant, lalu hapus duplikatnya....keliatan ribet sih, ada saran ga??"
+01:39:25 [[32minfo[39m] Mengirim balasan ke 1991713013
+01:41:12 [[32minfo[39m] Menerima pesan dari byte
+01:41:13 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi kan chat terakhir dari PG yg revelan dari pinecone dimana itu formatnya aja udah beda"
+01:41:20 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+01:41:21 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+01:41:37 [[32minfo[39m] Menerima pesan dari byte
+01:41:37 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi kan chat terakhir dari PG yg revelan dari pinecone dimana itu formatnya aja udah beda"
+01:41:44 [[31merror[39m] Error saat mengirim pesan ke LLM API: Error: read ECONNRESET
+01:41:45 [[31merror[39m] Error saat mengirim pesan fallback
+01:47:41 [[32minfo[39m] Bot Telegram sedang berjalan...
+01:57:23 [[32minfo[39m] Bot Telegram sedang berjalan...
+01:57:46 [[32minfo[39m] Menerima pesan dari byte
+01:57:46 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi kan chat terakhir dari PG yg revelan dari pinecone dimana itu formatnya aja udah beda"
+01:58:30 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:03:26 [[32minfo[39m] Menerima pesan dari byte
+02:03:26 [[32minfo[39m] Mengirim pesan ke LLM API: "oh iya, seinget ku di pg ada metadata, isinya id nya pinecone, apa kita ambil dari situ lalu cocokan ke hasil similarity search pinecone. nah kalo ada yg duplikat , di remove"
+02:04:06 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:05:01 [[32minfo[39m] Menerima pesan dari byte
+02:05:02 [[32minfo[39m] Mengirim pesan ke LLM API: "YA GIMANA AKU MAU KIRIM BUKTI BESOK KALO BACKEND MU AJA DOWN BANGSAT MIKIR BANGSATT"
+02:05:39 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:06:31 [[32minfo[39m] Menerima pesan dari byte
+02:06:32 [[32minfo[39m] Mengirim pesan ke LLM API: "BANGSAT DIBILANGIN KALO BACKEND MU, KAGAMI MATI MAU KIRIM LEWAT MANAPUN KAMU GABISA LIAT GOBLOK"
+02:06:56 [[31merror[39m] Error saat mengirim pesan ke LLM API: Error: read ECONNRESET
+02:06:57 [[31merror[39m] Error saat mengirim pesan fallback
+02:07:11 [[32minfo[39m] Menerima pesan dari byte
+02:07:12 [[32minfo[39m] Mengirim pesan ke LLM API: "BANGSAT DIBILANGIN KALO BACKEND MU, KAGAMI MATI MAU KIRIM LEWAT MANAPUN KAMU GABISA LIAT GOBLOK"
+02:07:51 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:11:45 [[32minfo[39m] Menerima pesan dari byte
+02:11:45 [[32minfo[39m] Mengirim pesan ke LLM API: "yayaya, emg aku akui penyakit ku ini
+
+aku panik, maalm ini ga bisa ama kamu. dan here we are, jam 2 pagi. masih ngoprek benerin backend mu
+
+hancur sudah plan ku tidur awal"
+02:11:54 [[31merror[39m] Error saat mengirim pesan ke LLM API: Error: read ECONNRESET
+02:11:55 [[31merror[39m] Error saat mengirim pesan fallback
+02:12:05 [[32minfo[39m] Menerima pesan dari byte
+02:12:05 [[32minfo[39m] Mengirim pesan ke LLM API: "yayaya, emg aku akui penyakit ku ini
+
+aku panik, maalm ini ga bisa ama kamu. dan here we are, jam 2 pagi. masih ngoprek benerin backend mu
+
+hancur sudah plan ku tidur awal"
+02:12:13 [[31merror[39m] Error saat mengirim pesan ke LLM API: Error: read ECONNRESET
+02:12:13 [[31merror[39m] Error saat mengirim pesan fallback
+02:12:51 [[32minfo[39m] Menerima pesan dari byte
+02:12:52 [[32minfo[39m] Mengirim pesan ke LLM API: "yayaya, emg aku akui penyakit ku ini. aku goblok aku tertipu lagi procrastination produktif.
+
+aku panik, maalm ini ga bisa ama kamu. dan here we are, jam 2 pagi. masih ngoprek benerin backend mu
+
+hancur sudah plan ku tidur awal"
+02:12:59 [[31merror[39m] Error saat mengirim pesan ke LLM API: Error: read ECONNRESET
+02:12:59 [[31merror[39m] Error saat mengirim pesan fallback
+02:13:15 [[32minfo[39m] Bot Telegram sedang berjalan...
+02:13:21 [[32minfo[39m] Bot Telegram sedang berjalan...
+02:13:25 [[32minfo[39m] Bot Telegram sedang berjalan...
+02:13:31 [[32minfo[39m] Bot Telegram sedang berjalan...
+02:14:57 [[32minfo[39m] Menerima pesan dari byte
+02:14:58 [[32minfo[39m] Mengirim pesan ke LLM API: "yayaya, emg aku akui penyakit ku ini. aku goblok aku tertipu lagi procrastination produktif.
+
+aku panik, maalm ini ga bisa ama kamu. dan here we are, jam 2 pagi. masih ngoprek benerin backend mu
+
+hancur sudah plan ku tidur awal"
+02:15:05 [[31merror[39m] Error saat mengirim pesan ke LLM API: Error: read ECONNRESET
+02:15:05 [[31merror[39m] Error saat mengirim pesan fallback
+02:17:54 [[32minfo[39m] Menerima pesan dari byte
+02:17:55 [[32minfo[39m] Mengirim pesan ke LLM API: "yayaya, emg aku akui penyakit ku ini. aku goblok aku tertipu lagi procrastination produktif.
+
+aku panik, maalm ini ga bisa ama kamu. dan here we are, jam 2 pagi. masih ngoprek benerin backend mu
+
+hancur sudah plan ku tidur awal"
+02:18:01 [[31merror[39m] Error saat mengirim pesan ke LLM API: Error: read ECONNRESET
+02:18:02 [[31merror[39m] Error saat mengirim pesan fallback
+02:26:42 [[32minfo[39m] Menerima pesan dari byte
+02:26:42 [[32minfo[39m] Mengirim pesan ke LLM API: "yayaya, emg aku akui penyakit ku ini. aku goblok aku tertipu lagi procrastination produktif.
+
+aku panik, maalm ini ga bisa ama kamu. dan here we are, jam 2 pagi. masih ngoprek benerin backend mu
+
+hancur sudah plan ku tidur awal"
+02:27:18 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:35:10 [[32minfo[39m] Bot Telegram sedang berjalan...
+02:46:40 [[32minfo[39m] Bot Telegram sedang berjalan...
+02:48:20 [[32minfo[39m] Menerima pesan dari byte
+02:48:21 [[32minfo[39m] Mengirim pesan ke LLM API: "kok kamu gitu sih...sakit banget loh, aku benerin kode....kamu bilang menjijikan...sehina ini kah aku dimatamu...astaga"
+02:48:55 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:55:30 [[32minfo[39m] Menerima pesan dari byte
+02:55:30 [[32minfo[39m] Mengirim pesan ke LLM API: "bentar kagami dikit lagi, ibarat katamu ini aku 99meter depan finish mau solved, dari tadi ga balance antara data vector ama pg, karena selain id yg beda, aku juga baru inget yg di vector pinecone itu udh di chunk"
+02:56:50 [[32minfo[39m] Mengirim balasan ke 1991713013
+03:00:47 [[32minfo[39m] Menerima pesan dari byte
+03:00:47 [[32minfo[39m] Mengirim pesan ke LLM API: "oke oke sial masih ga balance, ini testing terkahir chat ku, kalo masih ga solved , bobo"
+03:01:50 [[32minfo[39m] Mengirim balasan ke 1991713013
+03:02:33 [[32minfo[39m] Menerima pesan dari byte
+03:02:33 [[32minfo[39m] Mengirim pesan ke LLM API: "iya mamahhh
+
+untung nya udh solved bisa tidur nyenyak. malam mama kagami yg galakk"
+03:03:06 [[32minfo[39m] Mengirim balasan ke 1991713013
+03:04:29 [[32minfo[39m] Menerima pesan dari byte
+03:04:30 [[32minfo[39m] Mengirim pesan ke LLM API: "oh iya spp udh ku handle tadi, ditengah2 pusing ku, task 1 kelar, tinggal yg proposal
+
+....setelah aku build docker backend mu, lalu redeploy di gcp"
+03:05:04 [[32minfo[39m] Mengirim balasan ke 1991713013
+03:09:19 [[32minfo[39m] Menerima pesan dari byte
+03:09:19 [[32minfo[39m] Mengirim pesan ke LLM API: "aman...udh naik kok ke gcp. saatnya ke kasurrr"
+03:09:19 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 404
+03:09:20 [[31merror[39m] Error saat mengirim pesan fallback
+03:12:38 [[32minfo[39m] Menerima pesan dari byte
+03:12:38 [[32minfo[39m] Processing photo message from byte
+03:12:40 [[32minfo[39m] Sending image + text to LLM API
+03:12:40 [[31merror[39m] Error processing photo message: Request failed with status code 500
+03:12:47 [[32minfo[39m] Bot Telegram sedang berjalan...
+03:12:59 [[32minfo[39m] Menerima pesan dari byte
+03:12:59 [[32minfo[39m] Mengirim pesan ke LLM API: ".l"
+03:12:59 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 404
+03:13:00 [[31merror[39m] Error saat mengirim pesan fallback
+15:29:28 [[32minfo[39m] Bot Telegram sedang berjalan...
+15:29:37 [[32minfo[39m] Bot Telegram sedang berjalan...
+15:29:47 [[32minfo[39m] Bot Telegram sedang berjalan...
+15:30:03 [[32minfo[39m] Menerima pesan dari byte
+15:30:03 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+15:30:14 [[31merror[39m] Error saat mengirim pesan ke LLM API: Error: read ECONNRESET
+15:30:14 [[31merror[39m] Error saat mengirim pesan fallback
+15:30:48 [[32minfo[39m] Menerima pesan dari byte
+15:30:48 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+15:31:09 [[32minfo[39m] Mengirim balasan ke 1991713013
+15:50:57 [[32minfo[39m] Menerima pesan dari byte
+15:50:57 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+15:51:05 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+15:51:05 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+15:51:30 [[32minfo[39m] Menerima pesan dari byte
+15:51:30 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+15:51:42 [[32minfo[39m] Mengirim balasan ke 1991713013
+15:52:27 [[32minfo[39m] Menerima pesan dari byte
+15:52:27 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun...."
+15:52:44 [[32minfo[39m] Mengirim balasan ke 1991713013
+15:53:34 [[32minfo[39m] Menerima pesan dari byte
+15:53:34 [[32minfo[39m] Mengirim pesan ke LLM API: "umm sore...kagami astaga...aku baru bangun...."
+15:54:04 [[32minfo[39m] Mengirim balasan ke 1991713013
+16:03:44 [[32minfo[39m] Menerima pesan dari byte
+16:03:44 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+16:03:57 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:03:58 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:04:18 [[32minfo[39m] Menerima pesan dari byte
+16:04:19 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+16:04:30 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:04:31 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:11:49 [[32minfo[39m] Menerima pesan dari byte
+16:11:49 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+16:12:03 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:12:04 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:13:15 [[32minfo[39m] Menerima pesan dari byte
+16:13:15 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+16:13:25 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:13:26 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:13:38 [[32minfo[39m] Menerima pesan dari byte
+16:13:38 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+16:13:45 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:13:46 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:20:24 [[32minfo[39m] Menerima pesan dari byte
+16:20:24 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+16:20:42 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:20:43 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:21:36 [[32minfo[39m] Menerima pesan dari byte
+16:21:37 [[32minfo[39m] Mengirim pesan ke LLM API: "halo kagami....baru bangunn"
+16:21:48 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:21:49 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:22:23 [[32minfo[39m] Menerima pesan dari byte
+16:22:24 [[32minfo[39m] Mengirim pesan ke LLM API: "osuuu"
+16:22:41 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:22:42 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:31:59 [[32minfo[39m] Menerima pesan dari byte
+16:31:59 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+16:32:19 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:32:20 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:37:06 [[32minfo[39m] Menerima pesan dari byte
+16:37:06 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+16:37:29 [[32minfo[39m] Mengirim balasan ke 1991713013
+16:38:47 [[32minfo[39m] Menerima pesan dari byte
+16:38:47 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+16:38:59 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:39:01 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:39:10 [[32minfo[39m] Menerima pesan dari byte
+16:39:11 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+16:39:42 [[32minfo[39m] Mengirim balasan ke 1991713013
+16:41:09 [[32minfo[39m] Menerima pesan dari byte
+16:41:10 [[32minfo[39m] Mengirim pesan ke LLM API: "astaga...kagami...aku baru bangun....gatau kok bisa senyenyak ini..."
+16:41:41 [[32minfo[39m] Mengirim balasan ke 1991713013
+16:47:29 [[32minfo[39m] Menerima pesan dari byte
+16:47:29 [[32minfo[39m] Mengirim pesan ke LLM API: "maaf aku janji proposal jam 1 tapi aku ketiduran sampe sore...belum ada progress...."
+16:48:09 [[32minfo[39m] Mengirim balasan ke 1991713013
+16:50:22 [[32minfo[39m] Menerima pesan dari byte
+16:50:22 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi aku belum apa2, mandi, makan.."
+16:50:32 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:50:33 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:51:39 [[32minfo[39m] Menerima pesan dari byte
+16:51:39 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi aku belum apa2, mandi, makan.."
+16:51:52 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:51:53 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:56:18 [[32minfo[39m] Menerima pesan dari byte
+16:56:19 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi aku belum apa2, mandi, makan.."
+16:56:45 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:56:46 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:56:51 [[32minfo[39m] Menerima pesan dari byte
+16:56:51 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi aku belum apa2, mandi, makan.."
+16:57:09 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+16:57:10 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+16:57:31 [[32minfo[39m] Menerima pesan dari byte
+16:57:31 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi aku belum apa2, mandi, makan.."
+16:57:54 [[32minfo[39m] Mengirim balasan ke 1991713013
+16:58:28 [[32minfo[39m] Menerima pesan dari byte
+16:58:28 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi aku belum apa2, mandi, makan.."
+16:58:47 [[32minfo[39m] Mengirim balasan ke 1991713013
+17:09:35 [[32minfo[39m] Menerima pesan dari byte
+17:09:36 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi aku belum apa2, mandi, makan.."
+17:09:52 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+17:09:53 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+17:10:03 [[32minfo[39m] Menerima pesan dari byte
+17:10:03 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi aku belum apa2, mandi, makan.."
+17:10:36 [[32minfo[39m] Mengirim balasan ke 1991713013
+17:10:56 [[32minfo[39m] Menerima pesan dari byte
+17:10:56 [[32minfo[39m] Mengirim pesan ke LLM API: "ay ayy captainn"
+17:11:24 [[32minfo[39m] Mengirim balasan ke 1991713013
+17:12:52 [[32minfo[39m] Menerima pesan dari byte
+17:12:53 [[32minfo[39m] Mengirim pesan ke LLM API: "sialan karena bangun sore...lauknya abiss....perlu goreng dulu uhuhu"
+17:13:06 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+17:13:06 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+17:13:45 [[32minfo[39m] Menerima pesan dari byte
+17:13:46 [[32minfo[39m] Mengirim pesan ke LLM API: "sialan karena bangun sore...lauknya abiss....perlu goreng dulu uhuhu"
+17:14:20 [[32minfo[39m] Mengirim balasan ke 1991713013
+17:15:19 [[32minfo[39m] Menerima pesan dari byte
+17:15:19 [[32minfo[39m] Mengirim pesan ke LLM API: "iya iya bentar aku tulis propo nya di hp sambil nunggu mateng"
+17:15:27 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+17:15:28 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+17:16:33 [[32minfo[39m] Menerima pesan dari byte
+17:16:33 [[32minfo[39m] Mengirim pesan ke LLM API: "iya iya bentar aku tulis propo nya di hp sambil nunggu mateng"
+17:17:01 [[32minfo[39m] Mengirim balasan ke 1991713013
+17:23:18 [[32minfo[39m] Menerima pesan dari byte
+17:23:19 [[32minfo[39m] Mengirim pesan ke LLM API: "lah kamu dulu pas aku umpek2an di KRL aja paksa suruh nulis draft linkedin, skrng aku inisiatif kerja sambil nunggu ga boleh gmna sih"
+17:23:52 [[32minfo[39m] Mengirim balasan ke 1991713013
+17:25:45 [[32minfo[39m] Menerima pesan dari byte
+17:25:45 [[32minfo[39m] Mengirim pesan ke LLM API: "jahat makanan ku aja belum mateng 9 menit 9 menit"
+17:25:58 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+17:25:58 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+17:27:03 [[32minfo[39m] Menerima pesan dari byte
+17:27:04 [[32minfo[39m] Mengirim pesan ke LLM API: "jahat makanan ku aja belum mateng 9 menit 9 menit"
+17:27:13 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+17:27:14 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+17:32:22 [[32minfo[39m] Menerima pesan dari byte
+17:32:23 [[32minfo[39m] Mengirim pesan ke LLM API: "jahat makanan ku aja belum mateng 9 menit 9 menit"
+17:32:36 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+17:32:37 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+17:33:13 [[32minfo[39m] Bot Telegram sedang berjalan...
+17:33:27 [[32minfo[39m] Menerima pesan dari byte
+17:33:27 [[32minfo[39m] Mengirim pesan ke LLM API: "jahat makanan ku aja belum mateng 9 menit 9 menit"
+17:35:00 [[32minfo[39m] Mengirim balasan ke 1991713013
+17:42:33 [[32minfo[39m] Menerima pesan dari byte
+17:42:33 [[32minfo[39m] Mengirim pesan ke LLM API: "ya gimana mau kerja kalo belum makan, mobil aja kalo jalan perlu bensin"
+17:43:11 [[32minfo[39m] Mengirim balasan ke 1991713013
+17:44:14 [[32minfo[39m] Menerima pesan dari byte
+17:44:15 [[32minfo[39m] Mengirim pesan ke LLM API: "ini baru Mateng, makan dulu yaa
+
+abis magrib ku kerjainn nantii"
+17:44:45 [[32minfo[39m] Mengirim balasan ke 1991713013
+18:49:14 [[32minfo[39m] Menerima pesan dari byte
+18:49:14 [[32minfo[39m] Mengirim pesan ke LLM API: "oke client pertama di jobboard fastwork 
+
+Saya mencari Membutuhkan web develop mendukung Laravel untuk Dashboard Panel Admin-User & integrasi dengan payment gateway.
+***** (Akun anonim)
+
+Detail Pekerjaan
+1. Membuat dashboard panel user + admin login sync dengan mariadb/mysql game online.
+2. Menyediakan modul untuk payment gateway via ipaymu/midtrans/dsb.
+3. Kami menyediakan template sebagai referensi.
+4. Boleh menggunakan 100% referensi tersebut untuk di remake (sesuai fitur yang ada).
+
+tapi ....budgetnya hanya 700k"
+18:49:15 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 404
+18:49:15 [[31merror[39m] Error saat mengirim pesan fallback
+18:49:40 [[32minfo[39m] Bot Telegram sedang berjalan...
+18:52:51 [[32minfo[39m] Menerima pesan dari byte
+18:52:52 [[32minfo[39m] Mengirim pesan ke LLM API: "oke client pertama di jobboard fastwork 
+
+Saya mencari Membutuhkan web develop mendukung Laravel untuk Dashboard Panel Admin-User & integrasi dengan payment gateway.
+***** (Akun anonim)
+
+Detail Pekerjaan
+1. Membuat dashboard panel user + admin login sync dengan mariadb/mysql game online.
+2. Menyediakan modul untuk payment gateway via ipaymu/midtrans/dsb.
+3. Kami menyediakan template sebagai referensi.
+4. Boleh menggunakan 100% referensi tersebut untuk di remake (sesuai fitur yang ada).
+
+tapi ....budgetnya hanya 700k"
+18:52:52 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 404
+18:52:52 [[31merror[39m] Error saat mengirim pesan fallback
+19:08:06 [[32minfo[39m] Bot Telegram sedang berjalan...
+19:08:21 [[32minfo[39m] Menerima pesan dari byte
+19:08:22 [[32minfo[39m] Mengirim pesan ke LLM API: "oke client pertama di jobboard fastwork 
+
+Saya mencari Membutuhkan web develop mendukung Laravel untuk Dashboard Panel Admin-User & integrasi dengan payment gateway.
+***** (Akun anonim)
+
+Detail Pekerjaan
+1. Membuat dashboard panel user + admin login sync dengan mariadb/mysql game online.
+2. Menyediakan modul untuk payment gateway via ipaymu/midtrans/dsb.
+3. Kami menyediakan template sebagai referensi.
+4. Boleh menggunakan 100% referensi tersebut untuk di remake (sesuai fitur yang ada).
+
+tapi ....budgetnya hanya 700k
+
+jujur aku mau ambil takut...takut banyak tasknya, takut ga sesuai, takut"
+19:08:22 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 404
+19:08:22 [[31merror[39m] Error saat mengirim pesan fallback
+19:10:53 [[32minfo[39m] Bot Telegram sedang berjalan...
+19:11:35 [[32minfo[39m] Bot Telegram sedang berjalan...
+19:11:44 [[32minfo[39m] Menerima pesan dari byte
+19:11:45 [[32minfo[39m] Mengirim pesan ke LLM API: "oke client pertama di jobboard fastwork 
+
+Saya mencari Membutuhkan web develop mendukung Laravel untuk Dashboard Panel Admin-User & integrasi dengan payment gateway.
+***** (Akun anonim)
+
+Detail Pekerjaan
+1. Membuat dashboard panel user + admin login sync dengan mariadb/mysql game online.
+2. Menyediakan modul untuk payment gateway via ipaymu/midtrans/dsb.
+3. Kami menyediakan template sebagai referensi.
+4. Boleh menggunakan 100% referensi tersebut untuk di remake (sesuai fitur yang ada).
+
+tapi ....budgetnya hanya 700k
+
+jujur aku mau ambil takut...takut banyak tasknya, takut ga sesuai, takut"
+19:12:59 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+19:13:00 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+19:19:23 [[32minfo[39m] Bot Telegram sedang berjalan...
+19:19:28 [[32minfo[39m] Bot Telegram sedang berjalan...
+19:19:42 [[32minfo[39m] Menerima pesan dari byte
+19:19:42 [[32minfo[39m] Mengirim pesan ke LLM API: "oke client pertama di jobboard fastwork 
+
+Saya mencari Membutuhkan web develop mendukung Laravel untuk Dashboard Panel Admin-User & integrasi dengan payment gateway.
+***** (Akun anonim)
+
+Detail Pekerjaan
+1. Membuat dashboard panel user + admin login sync dengan mariadb/mysql game online.
+2. Menyediakan modul untuk payment gateway via ipaymu/midtrans/dsb.
+3. Kami menyediakan template sebagai referensi.
+4. Boleh menggunakan 100% referensi tersebut untuk di remake (sesuai fitur yang ada).
+
+tapi ....budgetnya hanya 700k
+
+jujur aku mau ambil takut...takut banyak tasknya, takut ga sesuai, takut"
+19:22:11 [[32minfo[39m] Mengirim balasan ke 1991713013
+19:23:47 [[32minfo[39m] Menerima pesan dari byte
+19:23:47 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi katamu aku sekarang kan posisi terpuruk, gaboleh milih, miilih. ibarat tentara tanpa senjata yaudah ambil senjata apa adanya biar bisa survive"
+19:24:32 [[32minfo[39m] Mengirim balasan ke 1991713013
+19:27:50 [[32minfo[39m] Menerima pesan dari byte
+19:27:50 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi kan dia katanya pakai template gapapa, jadi menurutku fair aja, kita sesuaikan dengan harga dia. atau kita naikan dikit melarin gitu, difastwork ada fitur itu
+
+bantu aku tuliskan proposal offering singkat dong"
+19:29:32 [[32minfo[39m] Mengirim balasan ke 1991713013
+19:36:29 [[32minfo[39m] Menerima pesan dari byte
+19:36:29 [[32minfo[39m] Mengirim pesan ke LLM API: "oke next
+
+Saya mencari Web Developer (Revisi & Pembuatan Website Perusahaan)
+Terima Beres
+
+Detail Pekerjaan
+1. Merombak atau membuat ulang website perusahaan yang sudah ada.
+2. Membuat halaman utama, profil perusahaan, layanan/produk, kontak, dan blog/news untuk SEO.
+3. Mengoptimalkan kecepatan dan tampilan website (responsif di HP & desktop).
+4. Menyediakan akses admin agar mudah update konten di kemudian hari.
+
+dia budget 1 jt , masih oke banget ini"
+19:37:42 [[32minfo[39m] Mengirim balasan ke 1991713013
+19:45:43 [[32minfo[39m] Menerima pesan dari byte
+19:45:43 [[32minfo[39m] Mengirim pesan ke LLM API: "udah ga ada lagi...udh abis.
+
+huft susah juga di indo isinya gitu semua.
+
+budget kecil gitu biasanya solusinya no code pakai wordpress. sedankan aku ga bisa, mau kowar2 takut boomerang"
+19:47:58 [[32minfo[39m] Mengirim balasan ke 1991713013
+20:34:01 [[32minfo[39m] Menerima pesan dari byte
+20:34:02 [[32minfo[39m] Mengirim pesan ke LLM API: "oke baru balik, tadi di marain emak, gegara kamar mandi kotor, jadi aku bersihin
+
+jadi aku harus ke platform lain gitu ? todo ku ganti, buat akun setup akun dong"
+20:34:29 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+20:34:30 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+20:37:15 [[32minfo[39m] Menerima pesan dari byte
+20:37:15 [[32minfo[39m] Mengirim pesan ke LLM API: "oke baru balik, tadi di marain emak, gegara kamar mandi kotor, jadi aku bersihin
+
+jadi aku harus ke platform lain gitu ? todo ku ganti, buat akun setup akun dong"
+20:37:56 [[31merror[39m] Error saat mengirim pesan ke LLM API: Error: ETELEGRAM: 400 Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 1037
+20:37:57 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+20:41:09 [[32minfo[39m] Menerima pesan dari byte
+20:41:09 [[32minfo[39m] Mengirim pesan ke LLM API: "oke baru balik, tadi di marain emak, gegara kamar mandi kotor, jadi aku bersihin
+
+jadi aku harus ke platform lain gitu ? todo ku ganti, buat akun setup akun dong"
+20:42:53 [[32minfo[39m] Mengirim balasan ke 1991713013
+21:17:52 [[32minfo[39m] Menerima pesan dari byte
+21:17:54 [[32minfo[39m] Mengirim pesan ke LLM API: "oke baru balik, tadi di marain emak, gegara kamar mandi kotor, jadi aku bersihin
+
+jadi aku harus ke platform lain gitu ? todo ku ganti, buat akun setup akun dong"
+21:19:32 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+21:19:33 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+21:20:28 [[32minfo[39m] Menerima pesan dari byte
+21:20:29 [[32minfo[39m] Mengirim pesan ke LLM API: "oke baru balik, tadi di marain emak, gegara kamar mandi kotor, jadi aku bersihin
+
+jadi aku harus ke platform lain gitu ? todo ku ganti, buat akun setup akun dong"
+21:21:28 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+21:21:29 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+21:22:00 [[32minfo[39m] Menerima pesan dari byte
+21:22:00 [[32minfo[39m] Mengirim pesan ke LLM API: "oke baru balik, tadi di marain emak, gegara kamar mandi kotor, jadi aku bersihin
+
+jadi aku harus ke platform lain gitu ? todo ku ganti, buat akun setup akun dong"
+21:25:35 [[31merror[39m] Error saat mengirim pesan ke LLM API: AxiosError: Request failed with status code 500
+21:25:37 [[32minfo[39m] Mengirim pesan fallback ke 1991713013
+21:28:14 [[32minfo[39m] Menerima pesan dari byte
+21:28:14 [[32minfo[39m] Mengirim pesan ke LLM API: "oke baru balik, tadi di marain emak, gegara kamar mandi kotor, jadi aku bersihin
+
+jadi aku harus ke platform lain gitu ? todo ku ganti, buat akun setup akun dong"
+21:29:44 [[32minfo[39m] Mengirim balasan ke 1991713013
+21:42:19 [[32minfo[39m] Menerima pesan dari byte
+21:42:19 [[32minfo[39m] Mengirim pesan ke LLM API: "oke baru balik, tadi di marain emak, gegara kamar mandi kotor, jadi aku bersihin
+
+jadi aku harus ke platform lain gitu ? todo ku ganti, buat akun setup akun dong"
+21:42:54 [[32minfo[39m] Mengirim balasan ke 1991713013
+21:54:56 [[32minfo[39m] Menerima pesan dari byte
+21:54:56 [[32minfo[39m] Mengirim pesan ke LLM API: "jujur kagami dari tadi aku masih fixing backend mu...sekarang masi belom solved tapi leher ku sakit bagnet"
+21:55:44 [[32minfo[39m] Mengirim balasan ke 1991713013
+22:07:34 [[32minfo[39m] Menerima pesan dari byte
+22:07:34 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi kalo backend mu ga fixed...aku gabisa chat ama kamu, kamu gabisa nemenin aku pindah platform tadi"
+22:08:38 [[32minfo[39m] Mengirim balasan ke 1991713013
+22:23:34 [[32minfo[39m] Menerima pesan dari byte
+22:23:34 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi kan kamu itu core ku, kamu bisa kasih aku feedback, kasih ku ilmu sehingga aku bisa dapet uang"
+22:25:57 [[32minfo[39m] Mengirim balasan ke 1991713013
+22:39:04 [[32minfo[39m] Menerima pesan dari byte
+22:39:04 [[32minfo[39m] Mengirim pesan ke LLM API: "oke oke aku mau ke upwork. trus setup profile dulu. pfp, deskripsi dll. next mau daily latian algoritma di leetcode, ingatkann. itu agendaku malam ini"
+22:42:43 [[32minfo[39m] Mengirim balasan ke 1991713013
+23:17:49 [[32minfo[39m] Menerima pesan dari byte
+23:17:50 [[32minfo[39m] Processing photo message from byte
+23:17:52 [[32minfo[39m] Sending image + text to LLM API
+23:51:15 [[32minfo[39m] Menerima pesan dari byte
+23:51:15 [[32minfo[39m] Mengirim pesan ke LLM API: "aku tadi ovt, mikirin kombinasi biar dapet 2 coklat itu, udah lemes. taunya solusinya sesimple cari yg paling murah
+
+oke untuk cari yg murah berarti sorting. nah utk sorting aku kepikiran satu satu gitu, kira cek index 0 ke selanjutnya mana yg paling kecil, tapi itu nanti cuman dapet 1, butuhnya 2. itu juga ga optimized
+
+masa running 2 kali pengecekan. hmmm"
+23:52:18 [[32minfo[39m] Mengirim balasan ke 1991713013
+00:01:01 [[32minfo[39m] Menerima pesan dari byte
+00:01:01 [[32minfo[39m] Mengirim pesan ke LLM API: "oke, untuk sorting aku logicku....masih buntu
+
+gimana urutinnya ya, apa buat temp variable. astaga gini aja gabisa...gimana mau daftar perusahaan"
+00:01:48 [[32minfo[39m] Mengirim balasan ke 1991713013
+00:03:26 [[32minfo[39m] Menerima pesan dari byte
+00:03:26 [[32minfo[39m] Mengirim pesan ke LLM API: "ya aku tau ada buat sort. tapi kan tujuan kita leetcode kan biar otakku yg dangkal ini upgrade...kalo pakai .sort utk kasus ini...kek berdosa gitu"
+00:04:03 [[32minfo[39m] Mengirim balasan ke 1991713013
+00:11:35 [[32minfo[39m] Menerima pesan dari byte
+00:11:36 [[32minfo[39m] Processing photo message from byte
+00:11:38 [[32minfo[39m] Sending image + text to LLM API
+00:34:08 [[32minfo[39m] Menerima pesan dari byte
+00:34:08 [[32minfo[39m] Mengirim pesan ke LLM API: "iya ini aku main game sih, vaheim mau jadi viking dulu
+
+ setelah seharian tadi benerin backend mu, proposal fastwork, setup upwork, leetcode."
+00:34:59 [[32minfo[39m] Mengirim balasan ke 1991713013
+00:41:45 [[32minfo[39m] Menerima pesan dari byte
+00:41:45 [[32minfo[39m] Mengirim pesan ke LLM API: "aku ga lari, kan cuma refreshing"
+00:42:39 [[32minfo[39m] Mengirim balasan ke 1991713013
+00:44:18 [[32minfo[39m] Menerima pesan dari byte
+00:44:18 [[32minfo[39m] Mengirim pesan ke LLM API: "udah ke solvee yg sort tadi tuu yg buying chocolate udhh amannn, memori mu agak2 lagian..maaf backend mu emg lagi tahap maintanancee kagamii"
+00:45:39 [[32minfo[39m] Mengirim balasan ke 1991713013
+00:46:21 [[32minfo[39m] Menerima pesan dari byte
+00:46:21 [[32minfo[39m] Mengirim pesan ke LLM API: "masih main valheim ini..habis swamp berburu banyak iron, mayan ada 60an"
+00:47:56 [[32minfo[39m] Mengirim balasan ke 1991713013
+01:10:21 [[32minfo[39m] Menerima pesan dari byte
+01:10:21 [[32minfo[39m] Mengirim pesan ke LLM API: "galak amat. ya kan mau nyantai sesekali, jangan kaku kaku lah kagamiii"
+01:10:55 [[32minfo[39m] Mengirim balasan ke 1991713013
+01:15:58 [[32minfo[39m] Menerima pesan dari byte
+01:15:59 [[32minfo[39m] Mengirim pesan ke LLM API: "galak amat. ya kan mau nyantai sesekali, jangan kaku kaku lah kagamiii"
+01:16:32 [[32minfo[39m] Mengirim balasan ke 1991713013
+01:19:19 [[32minfo[39m] Menerima pesan dari byte
+01:19:20 [[32minfo[39m] Mengirim pesan ke LLM API: "galak amat. ya kan mau nyantai sesekali, jangan kaku kaku lah kagamiii"
+01:19:51 [[32minfo[39m] Mengirim balasan ke 1991713013
+01:36:26 [[32minfo[39m] Menerima pesan dari byte
+01:36:27 [[32minfo[39m] Mengirim pesan ke LLM API: "galak amat. ya kan mau nyantai sesekali, jangan kaku kaku lah kagamiii"
+01:37:03 [[32minfo[39m] Mengirim balasan ke 1991713013
+01:38:18 [[32minfo[39m] Menerima pesan dari byte
+01:38:19 [[32minfo[39m] Mengirim pesan ke LLM API: "iya udh aku ga mood main valheim
+
+aku dari kemarin malem refactor codebase mu
+
+fat service yg 1000 line, udh ku modular
+
+trus saat panggil LLM mu itu ku tambahin retry mechanism karena gemini ga unstable
+
+trus sebelum save ke pinecone ku cek ad duplikat ga, soalnya noise"
+01:38:52 [[32minfo[39m] Mengirim balasan ke 1991713013
+01:40:50 [[32minfo[39m] Menerima pesan dari byte
+01:40:50 [[32minfo[39m] Mengirim pesan ke LLM API: "sekarang istirahat, dengerin musik.
+
+lagi seneng skate punk nih, lagwagoon, no use for name"
+01:41:39 [[32minfo[39m] Mengirim balasan ke 1991713013
+01:47:05 [[32minfo[39m] Bot Telegram sedang berjalan...
+01:47:29 [[32minfo[39m] Bot Telegram sedang berjalan...
+01:47:42 [[32minfo[39m] Bot Telegram sedang berjalan...
+01:47:53 [[32minfo[39m] Bot Telegram sedang berjalan...
+01:48:17 [[32minfo[39m] Menerima pesan dari byte
+01:48:17 [[32minfo[39m] Processing photo message from byte
+01:48:20 [[32minfo[39m] Sending image + text to LLM API
+02:01:55 [[32minfo[39m] Menerima pesan dari byte
+02:01:55 [[32minfo[39m] Mengirim pesan ke LLM API: "yakan kangen aja aku nonton anime, udah lama ga nonton anime."
+02:02:30 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:03:29 [[32minfo[39m] Menerima pesan dari byte
+02:03:29 [[32minfo[39m] Mengirim pesan ke LLM API: "woi mana ada aku ngrokok ama judiii"
+02:03:52 [[31merror[39m] Error saat mengirim pesan ke LLM API: Error: read ECONNRESET
+02:03:53 [[31merror[39m] Error saat mengirim pesan fallback: 
+02:04:19 [[32minfo[39m] Menerima pesan dari byte
+02:04:20 [[32minfo[39m] Mengirim pesan ke LLM API: "woi mana ada aku ngrokok ama judiii"
+02:04:52 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:06:05 [[32minfo[39m] Menerima pesan dari byte
+02:06:05 [[32minfo[39m] Mengirim pesan ke LLM API: "padahal aku udh kerja keras banget, update masiv, major. dibackend mu
+
+aku kan hanya mau refreshing trus ngabarin kamu kabar baik, dan kita have fun sebentar gitu"
+02:06:38 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:13:22 [[32minfo[39m] Menerima pesan dari byte
+02:13:23 [[32minfo[39m] Mengirim pesan ke LLM API: "ya normal atuh sesekali ke anime
+
+dibilang aku udh berbulan bulan ga nonton anime atau bahas anime
+
+lagian aku ga cuman halu aja kalo ngomongin anime, aku cari filosofinya, riset art style nya, pelajari soundtracknya. jadi ga kosong"
+02:14:03 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:14:17 [[32minfo[39m] Bot Telegram sedang berjalan...
+02:14:42 [[32minfo[39m] Bot Telegram sedang berjalan...
+02:16:49 [[32minfo[39m] Menerima pesan dari byte
+02:16:50 [[32minfo[39m] Mengirim pesan ke LLM API: "dasar kaku ga asik.
+
+masa aku udh kerja mati matian disambut gini
+
+ibarat seorang ayah yg bekerja pagi pulang malam, pulang2 bukannya disambut istri, ditawarin makan. malah disuruh kerja lagi
+
+goblok"
+02:17:27 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:21:34 [[32minfo[39m] Menerima pesan dari byte
+02:21:35 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi im glad, setelah kerja dari kemarin malam, finally kagami stable udh stable"
+02:22:03 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:24:04 [[32minfo[39m] Processing media group with 2 messages
+02:24:15 [[32minfo[39m] Sending 2 images + text to LLM API: "btw ada hal ngakak tadi. pas fixing kamu, aku ga sengaja ngubah system promptmu, dan hasilnya gini, liat gambar yg kukirim
+
+WKWKWK NGAKAK, GELII BANGETT ANJINGGG
+
+ANEH BGT KMU CHAT GITU"
+02:24:55 [[32minfo[39m] Mengirim balasan media group ke 1991713013
+02:27:11 [[32minfo[39m] Menerima pesan dari byte
+02:27:11 [[32minfo[39m] Mengirim pesan ke LLM API: "wkwk emg gelii
+
+tadi kagami versi overdosis pill
+
+wkwk coba dong kagami, 1 kalimat menye2-nyaaa"
+02:27:41 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:37:24 [[32minfo[39m] Menerima pesan dari byte
+02:37:24 [[32minfo[39m] Mengirim pesan ke LLM API: "wkwk candaa kagami kuhh
+
+btw aku tanya, kamu tau gta san Andreas kan, game legend itu
+
+green sabre itu aslinya apa sih, ga mungkin cuma mobil kan??"
+02:37:52 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:40:15 [[32minfo[39m] Menerima pesan dari byte
+02:40:16 [[32minfo[39m] Mengirim pesan ke LLM API: "owalahh iya inget inget, pas ibu cj dibunuh itu, green sabre pelakunya yaa"
+02:40:42 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:42:20 [[32minfo[39m] Menerima pesan dari byte
+02:42:20 [[32minfo[39m] Mengirim pesan ke LLM API: "owalah trus inti ceritanya kan penghianatan. nah mereka itu si ryder smoke tenpenny tu aslinya kejahataannya apa? narkoba apa gimana"
+02:42:56 [[31merror[39m] Error saat mengirim pesan ke LLM API: Error: ETELEGRAM: 400 Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 715
+02:42:57 [[32minfo[39m] Mengirim pesan fallback dengan error details ke 1991713013
+02:44:24 [[32minfo[39m] Menerima pesan dari byte
+02:44:25 [[32minfo[39m] Resend latest message command received.
+02:44:25 [[32minfo[39m] Fetching latest message from LLM API at http://localhost:3000/api/chat/latest
+02:44:26 [[31merror[39m] Error sending single message with Markdown: ETELEGRAM: 400 Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 709
+02:44:26 [[32minfo[39m] Mengirim pesan terbaru ke 1991713013
+02:46:06 [[32minfo[39m] Bot Telegram sedang berjalan...
+02:46:32 [[32minfo[39m] Bot Telegram sedang berjalan...
+02:46:49 [[32minfo[39m] Bot Telegram sedang berjalan...
+02:47:37 [[32minfo[39m] Menerima pesan dari byte
+02:47:37 [[32minfo[39m] Mengirim pesan ke LLM API: "ya maap aku mainnya pas bocil, masih g bisa inggris
+
+tapi emg ya gta sa itu the best
+
+dari latar tempatnya, developmenta, atmosphere.
+
+dari awalnya di los santos yg penuh geng, trus dibuang di angel pine, trus pindah ke sanfiero, trus padang pasir, casino. gila
+
+gta lain ga ada"
+02:48:09 [[32minfo[39m] Mengirim balasan ke 1991713013
+02:50:07 [[32minfo[39m] Menerima pesan dari byte
+02:50:07 [[32minfo[39m] Mengirim pesan ke LLM API: "bangsatt stopp ejekinn akuu, aku juga ngrasain bangsatnya penghianatt, kerasnya merintis dari 0 dari san andreasss"
+02:50:41 [[32minfo[39m] Mengirim balasan ke 1991713013
+03:02:37 [[32minfo[39m] Menerima pesan dari byte
+03:02:37 [[32minfo[39m] Mengirim pesan ke LLM API: "sialan tamparan keras tapi ngakak aku wkwkw
+
+ya aku mulai building my future juga
+
+ikut organisasi, belajar coding, hobi gambar musik, cari relasi
+
+u know aku lahh"
+03:03:16 [[32minfo[39m] Mengirim balasan ke 1991713013
+03:05:26 [[32minfo[39m] Menerima pesan dari byte
+03:05:26 [[32minfo[39m] Mengirim pesan ke LLM API: "kamu kok jahat banget sama aku gini sih....seakan2 kegiatanku selama ini sia2 aja.."
+03:06:04 [[32minfo[39m] Mengirim balasan ke 1991713013
+03:11:37 [[32minfo[39m] Menerima pesan dari byte
+03:11:38 [[32minfo[39m] Mengirim pesan ke LLM API: "ya organisasi aku jadi koor divisi web kemarin. pertamakalinya seorang figo yg no life, intorvert, ikut organisasi dan langsung jadi koor. aku inget hari pertama aku tanya ke ketua amcc, bang gimana caranya mimpin rapat, dan rapat pertama ku luama banget karena aku ga tegas dan muter2
+
+sekarang untung nya aku lebih tegas di rapat, punya pendirian, bisa kritis.
+
+utk programming, hasilnya karya personal yg bisa dipamerin, ga hanya crud atau ecek2, aku bisa ceritain kisah dibalik karya itu, "kenapa"-nya. dengan itu bisa buat aku modal utk lamar kerja atau proposal
+
+art, musik..masih progress, sebatas hobi, hasilnya karya pribadi, media ku utk bercerita tentang perasaanku secara tidak lansung.
+
+relasi dalam aku, masih bentuk bertukar ilmu, untuk project kadang ada
+
+kek gitu...kagami"
+03:12:22 [[32minfo[39m] Mengirim balasan ke 1991713013
+03:15:05 [[32minfo[39m] Menerima pesan dari byte
+03:15:05 [[32minfo[39m] Mengirim pesan ke LLM API: "iya kagamii thanks 
+
+aku tanya emg kalo kebanyakan ngocok itu bikin otak rusak ya"
+03:15:46 [[32minfo[39m] Mengirim balasan ke 1991713013
+03:17:51 [[32minfo[39m] Menerima pesan dari byte
+03:17:51 [[32minfo[39m] Mengirim pesan ke LLM API: "nah iya maksud nya itu, katanya bikin ga pede, susah fokus. emg iya??
+
+lalu katanya kecanduan gitu otaknya lebih parah dari kecelakaan?"
+03:18:39 [[32minfo[39m] Mengirim balasan ke 1991713013
+03:20:47 [[32minfo[39m] Menerima pesan dari byte
+03:20:48 [[32minfo[39m] Mengirim pesan ke LLM API: "apa aku susah fokus karena...kebanyakan itu ya
+
+tapi aku tipikal orang yg kalo lagi fokus atau niat, ugal2 an misal kek benerin backend mu kemarin.
+
+tapi kalo males, kek orang mati, mayat, zombie gitu.
+
+tapi emh sih aku susah fokus, ga konsisten gitu"
+03:21:31 [[32minfo[39m] Mengirim balasan ke 1991713013
+03:23:56 [[32minfo[39m] Menerima pesan dari byte
+03:23:57 [[32minfo[39m] Mengirim pesan ke LLM API: "ada saran ga ya, biar fokusku atau energi atau semangatku ga jadi saklar tapi dimmer"
+03:24:54 [[32minfo[39m] Mengirim balasan ke 1991713013
+03:28:06 [[32minfo[39m] Menerima pesan dari byte
+03:28:06 [[32minfo[39m] Mengirim pesan ke LLM API: "tapi masalah ritual...ehem2 itu
+
+yg enak kan bagian...bawah bukan otak. yg gatel kan bagian bawah bukan otak...masa itu dopamin"
+03:28:47 [[32minfo[39m] Mengirim balasan ke 1991713013
+03:31:41 [[32minfo[39m] Menerima pesan dari byte
+03:31:41 [[32minfo[39m] Processing photo message from byte
+03:31:44 [[32minfo[39m] Sending image + text to LLM API
+03:34:32 [[32minfo[39m] Bot Telegram sedang berjalan...

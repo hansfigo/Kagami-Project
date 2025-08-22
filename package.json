@@ -14,7 +14,8 @@
     "build:llm-core:direct": "docker buildx build --platform linux/arm64 -t ghcr.io/hansfigo/kagami-llm-core:latest -f apps/llm-core/Dockerfile . --push",
     "docker:build:telegram": "docker build -f apps/telegram-bot/Dockerfile -t kagami-telegram-bot:local .",
     "docker:build:llm": "docker build -f apps/llm-core/Dockerfile -t kagami-llm-core:local .",
-    "build:llm-core:package" : "npx turbo build --filter=@kagami/llm-core"
+    "docker:build:llm-core:prod": "sudo docker buildx build -t hansfigo/kagami-api:latest -f apps/llm-core/Dockerfile . --push",
+    "build:llm-core:package": "npx turbo build --filter=@kagami/llm-core"
   },
   "devDependencies": {
     "prettier": "^3.5.3",

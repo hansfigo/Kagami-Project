@@ -1,0 +1,8 @@
+services:
+  telegram_bot:
+    image: hansfigo/kagami-telegram-bot:latest
+    restart: always
+    environment:
+      NODE_ENV: production
+      TELEGRAM_BOT_TOKEN: 8158846432:AAHdHBO69UJZT1NTg9p0n-vFoijmzXWvm-A
+      LLM_API_URL: https://kagami-api-417878981806.asia-southeast1.run.app/api/chat/
