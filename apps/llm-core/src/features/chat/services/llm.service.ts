@@ -99,12 +99,17 @@ export class LLMService {
 
                 // Success! Break out of retry loop
                 if (retryCount > 0 || usingSecondaryLlm) {
-                    logger.info(`✅ LLM response received${retryCount > 0 ? ` after ${retryCount} retries` : ''}${usingSecondaryLlm ? ' using secondary LLM' : ''}`);
+                    const retryInfo = retryCount > 0 ? ` after ${retryCount} retries` : '';
+                    const llmInfo = usingSecondaryLlm ? ' using secondary LLM' : '';
+                    logger.info(`✅ LLM response received${retryInfo}${llmInfo}`);
                 }
 
                 // Add indicator if using secondary LLM
                 if (usingSecondaryLlm) {
+                    logger.info(`🔄 Response from secondary LLM (gemini-2.5-flash)`);
                     aiResponse = `[🔄]\n\n${aiResponse}`;
+                } else if (retryCount > 0) {
+                    logger.info(`✅ Response from primary LLM (gemini-2.5-pro) after retries`);
                 }
 
                 return { aiResponse, aiMessageCreatedAt, usedSecondaryLLM: usingSecondaryLlm };
@@ -135,10 +140,10 @@ export class LLMService {
                 }
                 
                 // If we've exhausted retries with primary LLM, try secondary LLM
-                if (retryCount > this.maxRetries && !usingSecondaryLlm) {
+                if (retryCount >= this.maxRetries && !usingSecondaryLlm) {
                     logger.warn(`🔄 Primary LLM failed after ${this.maxRetries} retries. Switching to secondary LLM (gemini-2.5-flash)...`);
                     usingSecondaryLlm = true;
-                    retryCount = 1; // Reset retry count for secondary LLM
+                    retryCount = 0; // Reset retry count for secondary LLM
                     
                     // Wait a bit before trying secondary LLM
                     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -146,15 +151,15 @@ export class LLMService {
                 }
                 
                 // If this is an empty response error and we have retries left, continue the loop
-                if (errorMessage.includes('empty response') && retryCount <= this.maxRetries) {
-                    logger.warn(`⚠️ ${llmType} empty response (attempt ${retryCount}/${this.maxRetries + 1}). Retrying in ${retryCount * 1000}ms...`);
+                if (errorMessage.includes('empty response') && retryCount < this.maxRetries && !usingSecondaryLlm) {
+                    logger.warn(`⚠️ ${llmType} empty response (attempt ${retryCount}/${this.maxRetries}). Retrying in ${retryCount * 800}ms...`);
                     await new Promise(resolve => setTimeout(resolve, retryCount * 800));
                     continue;
                 }
                 
                 // If we're using secondary LLM and still have retries, continue
-                if (usingSecondaryLlm && retryCount <= this.maxRetries) {
-                    logger.warn(`⚠️ ${llmType} error (attempt ${retryCount}/${this.maxRetries + 1}): ${errorMessage}. Retrying in ${retryCount * 1000}ms...`);
+                if (usingSecondaryLlm && retryCount < this.maxRetries) {
+                    logger.warn(`⚠️ ${llmType} error (attempt ${retryCount}/${this.maxRetries}): ${errorMessage}. Retrying in ${retryCount * 1000}ms...`);
                     await new Promise(resolve => setTimeout(resolve, retryCount * 1000));
                     continue;
                 }

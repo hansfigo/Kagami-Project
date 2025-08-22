@@ -103,6 +103,32 @@ export class ChatRepository {
     }
 
     /**
+     * Get recent chat messages as objects for context service
+     */
+    async getRecentMessagesAsObjects(conversationId: string, limit: number = 16): Promise<any[]> {
+        try {
+            const messages = await prisma.message.findMany({
+                where: { conversationId },
+                orderBy: { createdAt: 'desc' },
+                take: limit,
+            });
+
+            return messages.map((msg) => ({
+                id: msg.id,
+                role: msg.role,
+                content: msg.content,
+                timestamp: new Date(msg.createdAt).getTime(),
+                conversationId: msg.conversationId,
+                metadata: msg.metadata
+            })).reverse(); // Reverse to get chronological order
+
+        } catch (error) {
+            logger.error(`Error getting recent chat messages as objects:`, error);
+            throw new Error('Failed to retrieve recent chat messages');
+        }
+    }
+
+    /**
      * Save chat message pair to database
      */
     async saveChatMessage(args: SaveChatArgs): Promise<void> {
@@ -112,6 +138,9 @@ export class ChatRepository {
 
         try {
             await prisma.$transaction(async (tx) => {
+                // Ensure conversation exists first
+                await this.ensureConversationExists(UserConfig.id, UserConfig.conversationId);
+                
                 // Create user message
                 await tx.message.create({
                     data: {
@@ -119,6 +148,7 @@ export class ChatRepository {
                         conversationId: UserConfig.conversationId,
                         content: message,
                         role: 'user',
+                        createdAt: new Date(userMessageCreatedAt),
                         hasImages: (images && images.length > 0),
                         metadata: {
                             id: userMessageId,
@@ -128,9 +158,12 @@ export class ChatRepository {
                                 userId: UserConfig.id,
                                 timestamp: userMessageCreatedAt,
                                 role: 'user',
-                                chunkIndex: 0,
+                                chunked: false, // Will be updated when vector chunks are stored
+                                vectorChunkIds: [], // Will be updated when vector chunks are stored
+                                vectorChunkCount: 0, // Will be updated when vector chunks are stored
                                 imageCount: images?.length || 0,
-                                imageDescriptions: imageDescriptions || []
+                                imageDescriptions: imageDescriptions || [],
+                                messageLength: message.length
                             },
                             pageContent: message
                         }
@@ -173,6 +206,7 @@ export class ChatRepository {
                         conversationId: UserConfig.conversationId,
                         content: aiResponse,
                         role: 'assistant',
+                        createdAt: new Date(aiMessageCreatedAt),
                         fullPrompt: systemPrompt,
                         hasImages: false,
                         metadata: {
@@ -183,8 +217,13 @@ export class ChatRepository {
                                 userId: UserConfig.id,
                                 timestamp: aiMessageCreatedAt,
                                 role: 'assistant',
+                                chunked: false, // Will be updated when vector chunks are stored
+                                vectorChunkIds: [], // Will be updated when vector chunks are stored
+                                vectorChunkCount: 0, // Will be updated when vector chunks are stored
                                 respondedToImages: (images && images.length > 0),
-                                respondedToImageDescriptions: imageDescriptions || []
+                                respondedToImageDescriptions: imageDescriptions || [],
+                                systemPromptLength: systemPrompt.length,
+                                responseLength: aiResponse.length
                             },
                             pageContent: aiResponse
                         }
@@ -193,8 +232,21 @@ export class ChatRepository {
             });
 
         } catch (error) {
-            logger.error('Error saving chat message to database:', error);
-            throw new Error('Failed to save chat message to database');
+            logger.error('❌ Error saving chat message to database:', {
+                error: error instanceof Error ? error.message : 'Unknown error',
+                stack: error instanceof Error ? error.stack : undefined,
+                userMessageId,
+                aiMessageId,
+                conversationId: UserConfig.conversationId,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Provide more specific error message for debugging
+            if (error instanceof Error) {
+                throw new Error(`Database transaction failed: ${error.message}`);
+            } else {
+                throw new Error('Failed to save chat message to database - unknown error');
+            }
         }
     }
 
@@ -218,6 +270,9 @@ export class ChatRepository {
             logger.info(`📋 Found existing message, preserving metadata and adding chunk IDs`);
             const existingMetadata = existingMessage.metadata as any;
             
+            // Determine if this is chunked based on number of IDs and role
+            const isChunked = chunkIds.length > 1 || existingMessage.role === 'assistant';
+            
             // Update only the chunk-related fields while preserving everything else
             const updatedMetadata = {
                 ...existingMetadata,
@@ -225,7 +280,7 @@ export class ChatRepository {
                     ...existingMetadata?.metadata,
                     vectorChunkIds: chunkIds,
                     vectorChunkCount: chunkIds.length,
-                    chunked: true
+                    chunked: isChunked // User messages are not chunked (single document), assistant messages are chunked
                 }
             };
 
@@ -236,7 +291,7 @@ export class ChatRepository {
                 }
             });
 
-            logger.info(`✅ Successfully updated message ${messageId} metadata with ${chunkIds.length} chunk IDs`);
+            logger.info(`✅ Successfully updated message ${messageId} metadata with ${chunkIds.length} chunk IDs (chunked: ${isChunked})`);
             
             // Log the final metadata for verification
             logger.info(`🔍 Final metadata vectorChunkIds: ${JSON.stringify(updatedMetadata.metadata.vectorChunkIds)}`);
@@ -263,6 +318,117 @@ export class ChatRepository {
             ...message,
             imageUrls: message.images.map(img => img.imageUrl)
         };
+    }
+
+    /**
+     * Get last user message with its corresponding AI response
+     */
+    async getLastUserMessageWithAIResponse(): Promise<{
+        userMessage: any;
+        aiMessage: any;
+    } | null> {
+        try {
+            // Get the latest user message
+            const lastUserMessage = await prisma.message.findFirst({
+                where: {
+                    conversationId: UserConfig.conversationId,
+                    role: 'user'
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                include: {
+                    images: true
+                }
+            });
+
+            if (!lastUserMessage) {
+                return null;
+            }
+
+            // Get the AI response that came after this user message
+            const aiResponse = await prisma.message.findFirst({
+                where: {
+                    conversationId: UserConfig.conversationId,
+                    role: 'assistant',
+                    createdAt: {
+                        gt: lastUserMessage.createdAt
+                    }
+                },
+                orderBy: {
+                    createdAt: 'asc'
+                },
+                include: {
+                    images: true
+                }
+            });
+
+            return {
+                userMessage: {
+                    id: lastUserMessage.id,
+                    content: lastUserMessage.content,
+                    images: lastUserMessage.images
+                },
+                aiMessage: aiResponse ? {
+                    id: aiResponse.id,
+                    content: aiResponse.content
+                } : null
+            };
+        } catch (error) {
+            logger.error('Error getting last user message with AI response:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Save AI message only (for retry scenarios)
+     */
+    async saveAIMessage(args: {
+        aiMessageId: string;
+        aiMessageCreatedAt: number;
+        aiResponse: string;
+        systemPrompt: string;
+        conversationId: string;
+        userId: string;
+    }): Promise<void> {
+        try {
+            await prisma.$transaction(async (tx) => {
+                // Ensure conversation exists
+                await tx.conversation.upsert({
+                    where: { id: args.conversationId },
+                    update: {},
+                    create: {
+                        id: args.conversationId,
+                        userId: args.userId
+                    }
+                });
+
+                // Save AI message
+                await tx.message.create({
+                    data: {
+                        id: args.aiMessageId,
+                        conversationId: args.conversationId,
+                        role: 'assistant',
+                        content: args.aiResponse,
+                        createdAt: new Date(args.aiMessageCreatedAt),
+                        metadata: {
+                            systemPrompt: args.systemPrompt,
+                            timestamp: args.aiMessageCreatedAt,
+                            metadata: {
+                                chunked: false, // Will be updated when chunks are added
+                                vectorChunkIds: [],
+                                vectorChunkCount: 0
+                            }
+                        }
+                    }
+                });
+            });
+
+            logger.info(`✅ Successfully saved AI message: ${args.aiMessageId}`);
+        } catch (error) {
+            logger.error('❌ Failed to save AI message:', error);
+            throw error;
+        }
     }
 
     /**

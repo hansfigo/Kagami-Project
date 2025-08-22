@@ -17,7 +17,7 @@ export interface VectorMessage {
 
 export class VectorStoreService {
     /**
-     * Check if user message content already exists in vector store
+     * Check if user message content already exists in vector store using similarity score
      */
     async isDuplicateUserMessage(content: string, hasImages: boolean = false): Promise<boolean> {
         try {
@@ -26,24 +26,46 @@ export class VectorStoreService {
                 role: "user" as "user"
             };
 
-            // Search for exact content match
-            const results = await chatHistoryVectorStore.search(content, 5, filter);
+            // Search for similar content using semantic similarity
+            const results = await chatHistoryVectorStore.search(content, 3, filter);
             
-            // Check if any result has exactly the same content
-            const exactMatch = results.some((doc: Document) => {
+            if (results.length === 0) {
+                return false;
+            }
+
+            // Check similarity using both score and content comparison
+            const duplicateThreshold = 0.95; // Very high similarity threshold for duplicates
+            
+            for (const doc of results) {
                 const originalText = doc.metadata?.originalText || doc.pageContent;
                 const docHasImages = doc.metadata?.hasImages || false;
                 
-                // Content must match AND image presence must match
-                const contentMatches = originalText.trim().toLowerCase() === content.trim().toLowerCase();
+                // Image presence must match exactly
                 const imageStatusMatches = docHasImages === hasImages;
+                if (!imageStatusMatches) {
+                    continue;
+                }
                 
-                return contentMatches && imageStatusMatches;
-            });
-
-            if (exactMatch) {
-                logger.info(`🔄 Duplicate user message detected: "${content.substring(0, 50)}..." (hasImages: ${hasImages})`);
-                return true;
+                // Check similarity score if available (Pinecone provides this)
+                const score = (doc as any).score;
+                if (score && score >= duplicateThreshold) {
+                    logger.info(`🔄 High similarity duplicate detected (score: ${score.toFixed(3)}): "${content.substring(0, 50)}..." vs "${originalText.substring(0, 50)}..."`);
+                    return true;
+                }
+                
+                // Fallback: exact content match for 100% identical messages
+                const contentMatches = originalText.trim().toLowerCase() === content.trim().toLowerCase();
+                if (contentMatches) {
+                    logger.info(`🔄 Exact duplicate detected: "${content.substring(0, 50)}..." (hasImages: ${hasImages})`);
+                    return true;
+                }
+                
+                // Additional check: very similar text (normalized comparison)
+                const similarity = this.calculateTextSimilarity(originalText, content);
+                if (similarity >= 0.9) { // 90% text similarity
+                    logger.info(`🔄 Text similarity duplicate detected (similarity: ${similarity.toFixed(3)}): "${content.substring(0, 50)}..." vs "${originalText.substring(0, 50)}..."`);
+                    return true;
+                }
             }
 
             return false;
@@ -52,6 +74,29 @@ export class VectorStoreService {
             // If check fails, allow saving to be safe
             return false;
         }
+    }
+
+    /**
+     * Calculate text similarity using simple character-based comparison
+     */
+    private calculateTextSimilarity(text1: string, text2: string): number {
+        const normalize = (text: string) => text.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+        
+        const normalized1 = normalize(text1);
+        const normalized2 = normalize(text2);
+        
+        if (normalized1 === normalized2) {
+            return 1.0;
+        }
+        
+        // Simple Jaccard similarity based on words
+        const words1 = new Set(normalized1.split(' '));
+        const words2 = new Set(normalized2.split(' '));
+        
+        const intersection = new Set([...words1].filter(x => words2.has(x)));
+        const union = new Set([...words1, ...words2]);
+        
+        return intersection.size / union.size;
     }
 
     /**
@@ -133,14 +178,14 @@ export class VectorStoreService {
         timestamp: number,
         imageUrls?: string[],
         imageDescriptions?: string[]
-    ): Promise<void> {
+    ): Promise<string> {
         try {
             // Check for duplicate content first (skip if duplicate)
             const hasImages = !!(imageUrls && imageUrls.length > 0);
             const isDuplicate = await this.isDuplicateUserMessage(message, hasImages);
             if (isDuplicate) {
                 logger.info(`⏭️ Skipping duplicate user message storage for: "${message.substring(0, 50)}..." (hasImages: ${hasImages})`);
-                return;
+                return messageId; // Return the same messageId even if skipped
             }
 
             // Create enhanced page content for better semantic search
@@ -161,10 +206,11 @@ export class VectorStoreService {
                 enhancedPageContent = `${message} [Berisi ${imageUrls.length} gambar: ${imageDescText}]`;
             }
 
+            // Use messageId as the document ID for user messages (not chunked)
             const userInputDoc = new Document({
                 pageContent: enhancedPageContent,
                 metadata: {
-                    id: messageId,
+                    id: messageId, // This will be the vector store document ID
                     conversationId: UserConfig.conversationId,
                     userId: UserConfig.id,
                     timestamp: timestamp,
@@ -181,7 +227,10 @@ export class VectorStoreService {
             });
 
             await chatHistoryVectorStore.upsert(userInputDoc);
-            logger.info(`✅ Stored new user message: "${message.substring(0, 50)}..."`);
+            logger.info(`✅ Stored user message with ID: ${messageId} - "${message.substring(0, 50)}..."`);
+            
+            // Return the document ID (same as messageId for user messages)
+            return messageId;
         } catch (error) {
             logger.error('Error storing user message to vector store:', error);
             throw new Error('Failed to store user message to vector store');

@@ -15,6 +15,28 @@ import { LEVEL, logger } from "./utils/logger";
 export class LLMCore {
     constructor(private server: Elysia) { }
 
+    /**
+     * Clean escape characters that might cause Telegram parsing issues
+     */
+    private cleanEscapeCharacters(text: string): string {
+        if (!text || typeof text !== 'string') {
+            return text;
+        }
+
+        return text
+            // Remove escaped quotes
+            .replace(/\\"/g, '"')
+            .replace(/\\'/g, "'")
+            // Remove escaped backslashes (but keep single backslashes for formatting)
+            .replace(/\\\\/g, '\\')
+            // Remove other common escape sequences that might appear
+            .replace(/\\n/g, '\n')
+            .replace(/\\r/g, '\r')
+            .replace(/\\t/g, '\t')
+            // Remove any remaining escaped characters that might cause issues
+            .replace(/\\(.)/g, '$1');
+    }
+
     public async init(): Promise<void> {
         const hostname = process.env.LISTEN_HOSTNAME
 
@@ -118,6 +140,10 @@ export class LLMCore {
                 if (result.error) {
                     ctx.set.status = 500;
                     logger.error(`Message processing failed: ${result.error.message}`);
+                    
+                    // Clean escape characters from fallback response too
+                    const cleanedFallback = this.cleanEscapeCharacters(result.aiResponse || '');
+                    
                     return {
                         error: "Message processing failed",
                         details: {
@@ -127,7 +153,7 @@ export class LLMCore {
                             duration: result.error.details?.duration,
                             timestamp: result.error.details?.timestamp
                         },
-                        fallbackResponse: result.aiResponse,
+                        fallbackResponse: cleanedFallback,
                         status: "error_with_fallback"
                     };
                 }
@@ -142,6 +168,9 @@ export class LLMCore {
 
                 logger.info("Message processed successfully, returning response.");
 
+                // Clean escape characters from the AI response before sending
+                const cleanedResponse = this.cleanEscapeCharacters(aiResponse);
+
                 return {
                     message: "Message processed successfully",
                     status: "success",
@@ -151,7 +180,7 @@ export class LLMCore {
                             imageCount: images.length,
                             hasImages: images.length > 0
                         },
-                        response: aiResponse
+                        response: cleanedResponse
                     }
                 };
             } catch (error) {
@@ -174,12 +203,55 @@ export class LLMCore {
                 return { error: "No messages found." };
             }
 
+            // Clean escape characters before sending to Telegram
+            const cleanedMessage = this.cleanEscapeCharacters(latestMessage);
+
             return {
                 message: "Latest message retrieved successfully",
                 status: "success",
                 data: {
-                    latestMessage
+                    latestMessage: cleanedMessage
                 }
+            }
+        })
+
+        this.server.post("/api/chat/retry", async (ctx) => {
+            logger.info("Retrying last user message...");
+            
+            try {
+                const result = await chatController.retryLastMessage();
+                
+                if (result.error) {
+                    ctx.set.status = 400;
+                    return {
+                        error: result.error,
+                        status: "error"
+                    };
+                }
+
+                // Clean escape characters from the AI response before sending
+                const cleanedResponse = this.cleanEscapeCharacters(result.aiResponse || '');
+
+                return {
+                    message: "Message retried successfully",
+                    status: "success",
+                    data: {
+                        originalMessage: result.originalMessage,
+                        response: cleanedResponse,
+                        retryInfo: {
+                            deletedAIMessage: result.deletedAIMessageId,
+                            newAIMessage: result.newAIMessageId
+                        }
+                    }
+                };
+            } catch (error) {
+                logger.error("Error retrying message:", error);
+                ctx.set.status = 500;
+                return {
+                    error: "Failed to retry message",
+                    details: error instanceof Error ? error.message : "Unknown error",
+                    status: "error"
+                };
             }
         })
 

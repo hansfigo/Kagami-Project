@@ -1,5 +1,5 @@
 // Export all chat services
-export { ChatRepository, chatRepository } from '../chat.repository';
+export { ChatRepository, chatRepository } from '../repositories/chat.repository';
 export { ContextService, contextService } from './context.service';
 export { ImageService, imageService } from './image.service';
 export { LLMService, llmService } from './llm.service';

@@ -1,5 +1,6 @@
+import { UserConfig } from "../../../config";
 import { logger } from "../../../utils/logger";
-import { chatRepository } from "../chat.repository";
+import { chatRepository } from "../repositories/chat.repository";
 import { CombinedMessage, CombinedRelevantContext } from "../types/chat.types";
 import { vectorStoreService } from "./vector-store.service";
 
@@ -9,7 +10,7 @@ export class ContextService {
      */
     async getRecentChatHistory(conversationId: string, limit: number = 10): Promise<CombinedMessage[]> {
         try {
-            const messages = await chatRepository.getRecentMessages(conversationId, limit);
+            const messages = await chatRepository.getRecentMessagesAsObjects(conversationId, limit);
             return messages.map(msg => ({
                 id: msg.id,
                 role: msg.role,

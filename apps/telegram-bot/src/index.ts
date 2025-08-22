@@ -166,6 +166,8 @@ async function handleSingleMessage(msg: TelegramBot.Message) {
             '/start - Mulai chat dengan Kagami\n' +
             '/help - Tampilkan bantuan ini\n' +
             '/l - Ambil pesan terakhir jika ada error\n' +
+            '/d - Hapus pair pesan terakhir (user + AI)\n' +
+            '/r - Retry pesan user terakhir dengan AI response baru\n' +
             '/test-formatting - Test format pesan\n\n' +
             '📝 *Cara Penggunaan:*\n' +
             '• Kirim pesan text biasa untuk chat\n' +
@@ -318,6 +320,85 @@ async function handleTextMessage(msg: TelegramBot.Message, chatId: number, userM
             }
             logger.error('Error saat mengambil pesan terbaru:', error);
             await bot.sendMessage(chatId, 'Maaf, ada masalah saat mengambil pesan terbaru. Coba lagi nanti yaa.');
+            return;
+        }
+    }
+
+    // delete latest chat pair command
+    if (userMessage === '/d') {
+        await bot.sendChatAction(chatId, 'typing');
+        logger.info('Delete latest chat pair command received.');
+
+        try {
+            logger.info(`Deleting latest chat pair from LLM API at ${LLM_API_URL}latest-pair`);
+            
+            const response = await axios.delete(LLM_API_URL + 'latest-pair');
+
+            if (response.data.status === 'success') {
+                const deletedCount = response.data.data.deletedMessages;
+                const deletedTypes = response.data.data.deletedTypes;
+                
+                await bot.sendMessage(chatId, `✅ Hapus ${deletedCount} pesan (${deletedTypes})`);
+                logger.info(`Successfully deleted ${deletedCount} messages for chat ${chatId}`);
+            } else {
+                await bot.sendMessage(chatId, 'Gagal menghapus pesan.');
+                logger.warn('Delete operation failed:', response.data);
+            }
+
+            return;
+        } catch (error: any) {
+            logger.error('Error saat menghapus chat pair:', error);
+            
+            if (error.response?.status === 404) {
+                await bot.sendMessage(chatId, 'Tidak ada pesan untuk dihapus.');
+            } else {
+                await bot.sendMessage(chatId, 'Gagal menghapus pesan. Coba lagi nanti.');
+            }
+            return;
+        }
+    }
+
+    // retry last user message command
+    if (userMessage === '/r') {
+        await bot.sendChatAction(chatId, 'typing');
+        logger.info('Retry last message command received.');
+
+        try {
+            logger.info(`Retrying last message from LLM API at ${LLM_API_URL}retry`);
+            
+            const response = await axios.post(LLM_API_URL + 'retry');
+
+            if (response.data.status === 'success') {
+                const data = response.data.data;
+                const aiResponse = data.response;
+                
+                // Use sendLongMessageSafe for consistent Markdown handling like /l command
+                const retryMessage = `${aiResponse}`;
+                
+                if (retryMessage.length > MAX_TELEGRAM_MESSAGE_LENGTH) {
+                    await sendLongMessageSafe(chatId, retryMessage);
+                } else {
+                    await sendLongMessageSafe(chatId, retryMessage);
+                }
+                
+                logger.info(`Successfully retried message for chat ${chatId}. Original: "${data.originalMessage?.substring(0, 50)}..."`);
+            } else {
+                await bot.sendMessage(chatId, `❌ ${response.data.error || 'Gagal retry pesan.'}`);
+                logger.warn('Retry operation failed:', response.data);
+            }
+
+            return;
+        } catch (error: any) {
+            logger.error('Error saat retry message:', error);
+            
+            if (error.response?.status === 400) {
+                const errorMsg = error.response.data?.error || 'Tidak ada pesan untuk di-retry.';
+                await bot.sendMessage(chatId, `❌ ${errorMsg}`);
+            } else if (error.response?.status === 404) {
+                await bot.sendMessage(chatId, '❌ Tidak ada pesan user terakhir untuk di-retry.');
+            } else {
+                await bot.sendMessage(chatId, '❌ Gagal retry pesan. Coba lagi nanti.');
+            }
             return;
         }
     }
